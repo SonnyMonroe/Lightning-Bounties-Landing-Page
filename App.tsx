@@ -10,7 +10,7 @@ import { AboutPage } from './components/AboutPage';
 import { BountyAssistant } from './components/BountyAssistant';
 import { LeaderboardTable } from './components/LeaderboardTable';
 import { OpenBountiesTable } from './components/OpenBountiesTable';
-import { Zap, Shield, Globe, ArrowRight, Github, X, TrendingUp, Users, GitBranch, Database, CheckCircle, Linkedin, Youtube, Sun, Moon, Ban, HeartHandshake, CameraOff, Lock, PlayCircle } from 'lucide-react';
+import { Zap, Shield, Globe, ArrowRight, Github, X, TrendingUp, Users, GitBranch, Database, CheckCircle, Linkedin, Youtube, Sun, Moon, Ban, HeartHandshake, CameraOff, Lock, PlayCircle, Maximize2, Minimize2, Loader2 } from 'lucide-react';
 import { fetchLightningData, fetchBtcPrice } from './services/dataService';
 import { Developer, UnclaimedIssue, Metric } from './types';
 
@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [developers, setDevelopers] = useState<Developer[]>([]);
   const [openBounties, setOpenBounties] = useState<UnclaimedIssue[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Navigation State
   const [currentView, setCurrentView] = useState<'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about'>('home');
@@ -103,6 +104,7 @@ export const App: React.FC = () => {
   };
 
   const loadData = async () => {
+    setIsLoading(true);
     try {
       const [apiData, price] = await Promise.all([
         fetchLightningData(),
@@ -117,6 +119,8 @@ export const App: React.FC = () => {
       setBtcPrice(price);
     } catch (e) {
       console.error("Failed to load initial data", e);
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -174,8 +178,8 @@ export const App: React.FC = () => {
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                         </span>
                         <span className="text-slate-600 dark:text-slate-400 text-sm font-medium">BTC - USD:</span>
-                        <span className="text-slate-900 dark:text-white font-bold font-mono">
-                          ${btcPrice > 0 ? btcPrice.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '---,---'}
+                        <span className="text-slate-900 dark:text-white font-bold font-mono min-w-[80px] text-left">
+                          {btcPrice > 0 ? `$${btcPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : <Loader2 className="animate-spin text-slate-400 h-4 w-4 inline-block" />}
                         </span>
                       </div>
                     </div>
@@ -230,8 +234,8 @@ export const App: React.FC = () => {
                         <div className="w-12 h-12 bg-cyan-100 dark:bg-mv-cyan/10 rounded-lg flex items-center justify-center mb-3 border border-cyan-200 dark:border-mv-cyan/20 group-hover:border-mv-cyan-dark dark:group-hover:border-mv-cyan/50 transition-colors group-hover:scale-110 duration-300">
                           <Database className="text-mv-cyan-dark dark:text-mv-cyan" size={24} />
                         </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display">
-                          {getMetricValue('Open Bounties') || getMetricValue('openBounties')}
+                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display min-h-[36px] flex items-center justify-center">
+                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : (getMetricValue('Open Bounties') || getMetricValue('openBounties'))}
                         </div>
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors">Open Bounties</div>
                       </div>
@@ -240,8 +244,8 @@ export const App: React.FC = () => {
                         <div className="w-12 h-12 bg-purple-100 dark:bg-mv-purple/10 rounded-lg flex items-center justify-center mb-3 border border-purple-200 dark:border-mv-purple/20 group-hover:border-mv-purple-dark dark:group-hover:border-mv-purple/50 transition-colors group-hover:scale-110 duration-300">
                           <GitBranch className="text-mv-purple-dark dark:text-mv-purple" size={24} />
                         </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display">
-                          {getMetricValue('Unique Repositories') || getMetricValue('uniqueRepos')}
+                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display min-h-[36px] flex items-center justify-center">
+                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : (getMetricValue('Unique Repositories') || getMetricValue('uniqueRepos'))}
                         </div>
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-mv-purple-dark dark:group-hover:text-mv-purple transition-colors">Unique Repos</div>
                       </div>
@@ -250,8 +254,8 @@ export const App: React.FC = () => {
                         <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/10 rounded-lg flex items-center justify-center mb-3 border border-blue-200 dark:border-blue-500/20 group-hover:border-blue-400 dark:group-hover:border-blue-500/50 transition-colors group-hover:scale-110 duration-300">
                           <CheckCircle className="text-blue-600 dark:text-blue-500" size={24} />
                         </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display">
-                          {getMetricValue('Total Bounties') || getMetricValue('totalBounties')}
+                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display min-h-[36px] flex items-center justify-center">
+                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : (getMetricValue('Total Bounties') || getMetricValue('totalBounties'))}
                         </div>
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-500 transition-colors">Total Bounties</div>
                       </div>
@@ -260,8 +264,8 @@ export const App: React.FC = () => {
                         <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/10 rounded-lg flex items-center justify-center mb-3 border border-emerald-200 dark:border-emerald-500/20 group-hover:border-emerald-400 dark:group-hover:border-emerald-500/50 transition-colors group-hover:scale-110 duration-300">
                           <Users className="text-emerald-600 dark:text-emerald-500" size={24} />
                         </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display">
-                          {getMetricValue('Total Developers') || getMetricValue('totalDevelopers')}
+                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display min-h-[36px] flex items-center justify-center">
+                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : (getMetricValue('Total Developers') || getMetricValue('totalDevelopers'))}
                         </div>
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">Total Developers</div>
                       </div>
@@ -270,8 +274,8 @@ export const App: React.FC = () => {
                         <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-500/10 rounded-lg flex items-center justify-center mb-3 border border-yellow-200 dark:border-yellow-500/20 group-hover:border-yellow-400 dark:group-hover:border-yellow-500/50 transition-colors group-hover:scale-110 duration-300">
                           <Zap className="text-yellow-600 dark:text-yellow-500" size={24} />
                         </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display font-mono">
-                          {getMetricValue('Total Sats Rewarded').toLocaleString()}
+                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display font-mono min-h-[36px] flex items-center justify-center">
+                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : getMetricValue('Total Sats Rewarded').toLocaleString()}
                         </div>
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-yellow-600 dark:group-hover:text-yellow-500 transition-colors">Sats Rewarded</div>
                       </div>
@@ -281,17 +285,25 @@ export const App: React.FC = () => {
 
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-20">
                   <section id="leaderboard" className="scroll-mt-24">
-                     <LeaderboardTable developers={developers} btcPrice={btcPrice} />
+                     {isLoading ? (
+                       <div className="w-full h-96 flex items-center justify-center bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border rounded-xl">
+                          <Loader2 className="animate-spin text-cyan-500" size={48} />
+                       </div>
+                     ) : (
+                       <LeaderboardTable developers={developers} btcPrice={btcPrice} />
+                     )}
                   </section>
 
                   <section id="bounties" className="scroll-mt-24">
-                     <OpenBountiesTable bounties={openBounties} btcPrice={btcPrice} />
+                     {isLoading ? (
+                        <div className="w-full h-96 flex items-center justify-center bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border rounded-xl">
+                           <Loader2 className="animate-spin text-orange-500" size={48} />
+                        </div>
+                     ) : (
+                       <OpenBountiesTable bounties={openBounties} btcPrice={btcPrice} />
+                     )}
                   </section>
                 </div>
-
-                <section className="relative z-10 px-4 sm:px-6 lg:px-8 pb-24">
-                  <BountyAssistant />
-                </section>
 
                 <section id="features" className="relative z-10 py-24 bg-slate-50 dark:bg-mv-card/50 relative overflow-hidden border-t border-slate-200 dark:border-mv-border transition-colors duration-300">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -378,6 +390,37 @@ export const App: React.FC = () => {
 
                     </div>
                   </div>
+                </section>
+
+                <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-white dark:bg-mv-dark border-t border-slate-200 dark:border-mv-border transition-colors duration-300">
+                  {/* New Lightning Issues Promo */}
+                  <div className="w-full max-w-4xl mx-auto mb-12 bg-white dark:bg-[#020305] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden group">
+                        {/* Decorative gradients */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+                        
+                        <div className="relative z-10 text-center">
+                            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 font-display uppercase tracking-wide">
+                                Introducing <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Lightning Issues</span>
+                            </h2>
+                            <p className="text-slate-600 dark:text-slate-400 text-lg md:text-xl font-medium max-w-3xl mx-auto mb-8 leading-relaxed">
+                                Lightning Issues scans GitHub Repo's and automatically creates GitHub Issue based on current repository issues, feature suggestions and code quality improvements.
+                            </p>
+                            <a 
+                                href="https://issues.lightningbounties.com" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 font-bold text-white uppercase tracking-widest font-display bg-slate-900 dark:bg-black overflow-hidden rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,240,255,0.3)] ring-1 ring-slate-700 dark:ring-slate-800 hover:ring-cyan-500 dark:hover:ring-cyan-400"
+                            >
+                                <span className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                                <span className="relative z-10 flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
+                                    Try Lightning Issues <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+
+                  <BountyAssistant />
                 </section>
                 </>
               );

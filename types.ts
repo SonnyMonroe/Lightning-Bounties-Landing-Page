@@ -1,8 +1,6 @@
 export interface BountyDraft {
   title: string;
   description: string;
-  tags: string[];
-  estimatedSats: number;
 }
 
 export interface Metric {

@@ -97,10 +97,15 @@ export const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onNavigat
                <div className="absolute inset-0 rounded-full bg-mv-cyan-dark/10 dark:bg-mv-cyan/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               {darkMode ? <Sun size={20} className="relative z-10" /> : <Moon size={20} className="relative z-10" />}
             </button>
-            <button className="relative overflow-hidden group bg-transparent px-6 py-2.5 rounded-sm font-bold text-sm uppercase tracking-wider font-display text-white transition-all duration-300 shadow-md dark:shadow-none hover:shadow-lg hover:shadow-cyan-500/25 dark:hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 dark:focus:ring-offset-mv-dark">
+            <a 
+              href="https://app.lightningbounties.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative overflow-hidden group bg-transparent px-6 py-2.5 rounded-sm font-bold text-sm uppercase tracking-wider font-display text-white transition-all duration-300 shadow-md dark:shadow-none hover:shadow-lg hover:shadow-cyan-500/25 dark:hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 dark:focus:ring-offset-mv-dark flex items-center justify-center"
+            >
               <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-mv-cyan-dark to-mv-purple-dark dark:from-[#00f0ff] dark:to-[#bc13fe] opacity-90 group-hover:opacity-100 transition-opacity"></div>
-              <span className="relative z-10 flex items-center gap-2">Post a Bounty</span>
-            </button>
+              <span className="relative z-10 flex items-center gap-2">Browse Bounties</span>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -134,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onNavigat
             <button onClick={() => { handleNavClick('home', '#features'); setMobileMenuOpen(false); }} className="block w-full text-left px-3 py-3 text-base font-bold uppercase text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors">Features</button>
             <button onClick={() => { handleNavClick('about'); setMobileMenuOpen(false); }} className="block w-full text-left px-3 py-3 text-base font-bold uppercase text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors">About</button>
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10 flex flex-col gap-3">
-              <button className="w-full bg-gradient-to-r from-mv-cyan-dark to-mv-purple-dark dark:from-mv-cyan dark:to-mv-purple text-white py-3 rounded-sm font-bold uppercase font-display shadow-lg">Post a Bounty</button>
+              <a href="https://app.lightningbounties.com/" target="_blank" rel="noopener noreferrer" className="w-full bg-gradient-to-r from-mv-cyan-dark to-mv-purple-dark dark:from-mv-cyan dark:to-mv-purple text-white py-3 rounded-sm font-bold uppercase font-display shadow-lg text-center block">Browse Bounties</a>
             </div>
           </div>
         </div>

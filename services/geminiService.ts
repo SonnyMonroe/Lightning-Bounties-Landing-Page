@@ -7,25 +7,26 @@ export const generateBountyDraft = async (userIdea: string): Promise<BountyDraft
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Transform this raw idea into a professional structured bounty listing for a developer marketplace. Idea: "${userIdea}"`,
+      contents: `You are an expert technical product manager. Transform this raw user idea into a professional, comprehensive GitHub Issue structure.
+      
+      Idea: "${userIdea}"
+
+      The description should be in Markdown format and include sections like:
+      - **Description**: A clear summary of the task.
+      - **Requirements**: Specific technical needs.
+      - **Acceptance Criteria**: How to verify the fix/feature.
+      - **Context**: Any background info.
+      
+      Do not generate tags or budget.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
-            title: { type: Type.STRING, description: "A catchy, professional title for the task" },
-            description: { type: Type.STRING, description: "A detailed description in Markdown format, including requirements" },
-            tags: { 
-              type: Type.ARRAY, 
-              items: { type: Type.STRING },
-              description: "3-5 relevant tech stack tags (e.g., React, Rust, Lightning)"
-            },
-            estimatedSats: { 
-              type: Type.INTEGER, 
-              description: "Estimated budget in Satoshis (1 USD ~= 2000 sats roughly, be generous)" 
-            }
+            title: { type: Type.STRING, description: "A catchy, concise, and professional GitHub issue title." },
+            description: { type: Type.STRING, description: "The full body of the issue in Markdown format." },
           },
-          required: ["title", "description", "tags", "estimatedSats"]
+          required: ["title", "description"]
         }
       }
     });
