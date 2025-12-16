@@ -4,7 +4,7 @@ import { Zap, Menu, X, Sun, Moon } from 'lucide-react';
 interface HeaderProps {
   darkMode: boolean;
   toggleTheme: () => void;
-  onNavigate: (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms') => void;
+  onNavigate: (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onNavigate }) => {
@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onNavigat
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms', anchor?: string) => {
+  const handleNavClick = (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about', anchor?: string) => {
     onNavigate(view);
     if (view === 'home' && anchor) {
         // Simple timeout to allow view to render before scrolling
@@ -67,17 +67,24 @@ export const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onNavigat
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8" aria-label="Main Navigation">
-            {['how-it-works', 'team'].map((item) => (
+            {['how-it-works', 'about'].map((item) => (
                <button 
                  key={item}
                  onClick={() => handleNavClick(item as any)} 
-                 className="text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-colors text-sm font-bold uppercase tracking-wider font-display hover:scale-105 transform duration-200 focus:outline-none focus:text-mv-cyan-dark dark:focus:text-mv-cyan focus:underline decoration-2 underline-offset-4"
+                 className="relative text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-colors text-sm font-bold uppercase tracking-wider font-display focus:outline-none focus:text-mv-cyan-dark dark:focus:text-mv-cyan group"
                >
                  {item.replace(/-/g, ' ')}
+                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-mv-cyan-dark dark:bg-mv-cyan transition-all duration-300 group-hover:w-full"></span>
                </button>
             ))}
-            <button onClick={() => handleNavClick('home', '#bounties')} className="text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-colors text-sm font-bold uppercase tracking-wider font-display hover:scale-105 transform duration-200 focus:outline-none focus:text-mv-cyan-dark dark:focus:text-mv-cyan focus:underline decoration-2 underline-offset-4">Explore Bounties</button>
-            <button onClick={() => handleNavClick('home', '#features')} className="text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-colors text-sm font-bold uppercase tracking-wider font-display hover:scale-105 transform duration-200 focus:outline-none focus:text-mv-cyan-dark dark:focus:text-mv-cyan focus:underline decoration-2 underline-offset-4">Features</button>
+            <button onClick={() => handleNavClick('home', '#bounties')} className="relative text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-colors text-sm font-bold uppercase tracking-wider font-display focus:outline-none focus:text-mv-cyan-dark dark:focus:text-mv-cyan group">
+                Explore Bounties
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-mv-cyan-dark dark:bg-mv-cyan transition-all duration-300 group-hover:w-full"></span>
+            </button>
+            <button onClick={() => handleNavClick('home', '#features')} className="relative text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-colors text-sm font-bold uppercase tracking-wider font-display focus:outline-none focus:text-mv-cyan-dark dark:focus:text-mv-cyan group">
+                Features
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-mv-cyan-dark dark:bg-mv-cyan transition-all duration-300 group-hover:w-full"></span>
+            </button>
           </nav>
 
           {/* CTA Buttons & Theme Toggle */}
@@ -90,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onNavigat
                <div className="absolute inset-0 rounded-full bg-mv-cyan-dark/10 dark:bg-mv-cyan/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               {darkMode ? <Sun size={20} className="relative z-10" /> : <Moon size={20} className="relative z-10" />}
             </button>
-            <button className="relative overflow-hidden group bg-transparent px-6 py-2.5 rounded-sm font-bold text-sm uppercase tracking-wider font-display text-white transition-all duration-300 shadow-md dark:shadow-none hover:shadow-lg dark:hover:shadow-[0_0_20px_rgba(0,240,255,0.3)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 dark:focus:ring-offset-mv-dark">
+            <button className="relative overflow-hidden group bg-transparent px-6 py-2.5 rounded-sm font-bold text-sm uppercase tracking-wider font-display text-white transition-all duration-300 shadow-md dark:shadow-none hover:shadow-lg hover:shadow-cyan-500/25 dark:hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 dark:focus:ring-offset-mv-dark">
               <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-mv-cyan-dark to-mv-purple-dark dark:from-[#00f0ff] dark:to-[#bc13fe] opacity-90 group-hover:opacity-100 transition-opacity"></div>
               <span className="relative z-10 flex items-center gap-2">Post a Bounty</span>
             </button>
@@ -125,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onNavigat
             <button onClick={() => { handleNavClick('how-it-works'); setMobileMenuOpen(false); }} className="block w-full text-left px-3 py-3 text-base font-bold uppercase text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors">How it Works</button>
             <button onClick={() => { handleNavClick('home', '#bounties'); setMobileMenuOpen(false); }} className="block w-full text-left px-3 py-3 text-base font-bold uppercase text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors">Explore Bounties</button>
             <button onClick={() => { handleNavClick('home', '#features'); setMobileMenuOpen(false); }} className="block w-full text-left px-3 py-3 text-base font-bold uppercase text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors">Features</button>
-            <button onClick={() => { handleNavClick('team'); setMobileMenuOpen(false); }} className="block w-full text-left px-3 py-3 text-base font-bold uppercase text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors">Team</button>
+            <button onClick={() => { handleNavClick('about'); setMobileMenuOpen(false); }} className="block w-full text-left px-3 py-3 text-base font-bold uppercase text-slate-600 dark:text-slate-300 hover:text-mv-cyan-dark dark:hover:text-mv-cyan hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors">About</button>
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10 flex flex-col gap-3">
               <button className="w-full bg-gradient-to-r from-mv-cyan-dark to-mv-purple-dark dark:from-mv-cyan dark:to-mv-purple text-white py-3 rounded-sm font-bold uppercase font-display shadow-lg">Post a Bounty</button>
             </div>

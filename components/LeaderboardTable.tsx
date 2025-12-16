@@ -1,17 +1,20 @@
 import React, { useState, useMemo } from 'react';
 import { Developer } from '../types';
-import { Trophy, Award, ChevronDown, ChevronUp, ArrowUpDown } from 'lucide-react';
+import { Trophy, Award, ChevronDown, ChevronUp, ArrowUpDown, Bitcoin, DollarSign } from 'lucide-react';
 
 interface LeaderboardTableProps {
   developers: Developer[];
+  btcPrice: number;
 }
 
 type SortKey = keyof Developer;
 type SortDirection = 'asc' | 'desc';
+type Currency = 'SATS' | 'USD';
 
-export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers }) => {
+export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, btcPrice }) => {
   const [showAll, setShowAll] = useState(false);
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection } | null>(null);
+  const [currency, setCurrency] = useState<Currency>('SATS');
 
   const sortedDevelopers = useMemo(() => {
     let sortableItems = [...developers];
@@ -59,15 +62,52 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers }
     return sortConfig.direction === 'asc' ? 'ascending' : 'descending';
   };
 
+  const formatReward = (sats: number) => {
+    if (currency === 'SATS') {
+        return `${sats.toLocaleString()} Sats`;
+    }
+    const usdValue = (sats / 100_000_000) * btcPrice;
+    return `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
   return (
     <div className="w-full bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border rounded-xl overflow-hidden shadow-xl dark:shadow-2xl transition-colors duration-300">
-      <div className="p-6 border-b border-slate-200 dark:border-mv-border bg-slate-50 dark:bg-gradient-to-r dark:from-mv-card dark:to-mv-dark">
-        <h3 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3 mb-2 font-display uppercase tracking-wide">
-          Bounty Hunter Leaderboard <Trophy className="text-yellow-500 drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]" />
-        </h3>
-        <p className="text-slate-600 dark:text-slate-400 text-sm">
-          Top hunters earning Bitcoin. This could be YOU!
-        </p>
+      <div className="p-8 border-b border-slate-200 dark:border-mv-border bg-slate-50 dark:bg-gradient-to-r dark:from-mv-card dark:to-mv-dark flex flex-col items-center justify-center text-center">
+        <div className="flex flex-col items-center">
+            <h3 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white flex items-center justify-center gap-3 mb-2 font-display uppercase tracking-widest leading-none">
+            Bounty Hunter Leaderboard <Trophy size={32} className="text-yellow-500 drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]" strokeWidth={1.5} />
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base font-medium max-w-lg mb-6">
+            Top hunters earning Bitcoin. Solve issues, climb ranks, get paid.
+            </p>
+        </div>
+
+        <div className="flex justify-center">
+            <div className="bg-slate-200 dark:bg-white/5 p-1 rounded-lg flex items-center border border-slate-300 dark:border-white/10">
+                <button
+                    onClick={() => setCurrency('SATS')}
+                    className={`
+                        flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all
+                        ${currency === 'SATS' 
+                            ? 'bg-white dark:bg-mv-cyan/20 text-slate-900 dark:text-mv-cyan shadow-sm border border-slate-200 dark:border-mv-cyan/50' 
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}
+                    `}
+                >
+                   <Bitcoin size={14} /> Sats
+                </button>
+                <button
+                    onClick={() => setCurrency('USD')}
+                    className={`
+                        flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all
+                        ${currency === 'USD' 
+                            ? 'bg-white dark:bg-green-500/20 text-slate-900 dark:text-green-400 shadow-sm border border-slate-200 dark:border-green-500/50' 
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}
+                    `}
+                >
+                   <DollarSign size={14} /> USD
+                </button>
+            </div>
+        </div>
       </div>
       
       <div className="overflow-x-auto">
@@ -117,14 +157,14 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers }
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-mv-border">
             {displayedDevelopers.map((dev, index) => (
-              <tr key={dev.developer} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+              <tr key={dev.developer} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 group relative border-l-4 border-transparent hover:border-cyan-500 dark:hover:border-mv-cyan hover:shadow-md dark:hover:shadow-black/20">
                 <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-2 sm:gap-4">
                     <div className="relative shrink-0">
                       <img 
                         src={dev.avatarUrl} 
                         alt={dev.developer} 
-                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-slate-200 dark:border-mv-border object-cover group-hover:border-cyan-500 dark:group-hover:border-mv-cyan transition-colors shadow-sm"
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-slate-200 dark:border-mv-border object-cover group-hover:border-cyan-500 dark:group-hover:border-mv-cyan group-hover:ring-2 group-hover:ring-cyan-500/50 group-hover:scale-110 transition-all duration-300 shadow-sm"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${dev.developer}&background=random`;
                         }}
@@ -145,21 +185,21 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers }
                       href={`https://github.com/${dev.developer}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="font-bold text-slate-900 dark:text-white hover:text-cyan-700 dark:hover:text-mv-cyan transition-colors text-sm sm:text-base focus:outline-none focus:underline"
+                      className="font-bold text-slate-900 dark:text-white hover:text-cyan-700 dark:hover:text-mv-cyan transition-colors text-sm sm:text-base focus:outline-none focus:underline group-hover:translate-x-1 duration-200 inline-block"
                     >
                       {dev.developer}
                     </a>
                   </div>
                 </td>
                 <td className="px-3 sm:px-6 py-4 text-center whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-purple-50 dark:bg-mv-purple/10 border border-purple-200 dark:border-mv-purple/20 text-purple-700 dark:text-mv-purple text-xs font-bold">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-purple-50 dark:bg-mv-purple/10 border border-purple-200 dark:border-mv-purple/20 text-purple-700 dark:text-mv-purple text-xs font-bold group-hover:bg-purple-100 dark:group-hover:bg-mv-purple/20 transition-colors">
                     <Award size={12} className="sm:w-[14px] sm:h-[14px]" aria-hidden="true" />
                     {dev.claimedCount}
                   </span>
                 </td>
                 <td className="px-3 sm:px-6 py-4 text-right whitespace-nowrap">
-                  <div className="font-mono font-bold text-cyan-700 dark:text-mv-cyan drop-shadow-sm dark:drop-shadow-[0_0_5px_rgba(0,240,255,0.3)] text-sm sm:text-base">
-                    {dev.rewardsInSats.toLocaleString()} Sats
+                  <div className={`font-mono font-bold text-sm sm:text-base transition-colors group-hover:scale-105 origin-right duration-200 ${currency === 'SATS' ? 'text-cyan-700 dark:text-mv-cyan' : 'text-green-600 dark:text-green-400'}`}>
+                    {formatReward(dev.rewardsInSats)}
                   </div>
                 </td>
               </tr>
@@ -172,7 +212,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers }
         <div className="p-4 border-t border-slate-200 dark:border-mv-border bg-white dark:bg-mv-card text-center">
           <button 
             onClick={() => setShowAll(!showAll)}
-            className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 mx-auto px-4 py-2 rounded hover:bg-slate-100 dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 mx-auto px-4 py-2 rounded hover:bg-slate-100 dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-cyan-500 hover:scale-105 duration-200"
           >
             {showAll ? (
               <>Show Less <ChevronUp size={16} /></>

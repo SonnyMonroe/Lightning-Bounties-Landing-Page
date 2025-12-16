@@ -21,6 +21,8 @@ export interface UnclaimedIssue {
   title: string;
   repository: string;
   rewardInSats: number;
+  id?: string;
+  url?: string;
 }
 
 export interface Bounty {

@@ -48,13 +48,13 @@ export const BountyAssistant: React.FC = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             placeholder="e.g., I need a Python script to scrape Bitcoin price every hour..."
-            className="flex-1 bg-slate-50 dark:bg-mv-dark border border-slate-300 dark:border-mv-border text-slate-900 dark:text-white rounded-sm px-5 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-mv-cyan focus:border-cyan-500 dark:focus:border-mv-cyan placeholder-slate-400 dark:placeholder-slate-600 transition-all shadow-inner"
+            className="flex-1 bg-slate-50 dark:bg-mv-dark border border-slate-300 dark:border-mv-border text-slate-900 dark:text-white rounded-sm px-5 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-mv-cyan focus:border-cyan-500 dark:focus:border-mv-cyan placeholder-slate-400 dark:placeholder-slate-600 transition-all shadow-inner focus:shadow-md"
             aria-label="Describe your bounty idea"
           />
           <button 
             onClick={handleGenerate}
             disabled={loading || !input.trim()}
-            className="bg-gradient-to-r from-cyan-600 to-purple-600 dark:from-mv-cyan dark:to-mv-purple hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-sm font-bold uppercase tracking-wider transition-all shadow-lg shadow-cyan-500/20 dark:shadow-mv-cyan/20 flex items-center justify-center gap-2 min-w-[160px] font-display"
+            className="bg-gradient-to-r from-cyan-600 to-purple-600 dark:from-mv-cyan dark:to-mv-purple hover:from-cyan-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-sm font-bold uppercase tracking-wider transition-all shadow-lg shadow-cyan-500/20 dark:shadow-mv-cyan/20 hover:shadow-cyan-500/40 dark:hover:shadow-mv-cyan/40 hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 min-w-[160px] font-display"
           >
             {loading ? <Loader2 className="animate-spin" /> : <>Draft <ArrowRight size={18} /></>}
           </button>
@@ -101,8 +101,8 @@ export const BountyAssistant: React.FC = () => {
           </div>
 
           <div className="mt-6 flex justify-end">
-             <button className="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white underline" onClick={() => setDraft(null)}>Discard</button>
-             <button className="ml-4 bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 px-6 py-2 rounded-sm font-bold text-sm uppercase tracking-wider transition-colors">
+             <button className="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white underline transition-colors" onClick={() => setDraft(null)}>Discard</button>
+             <button className="ml-4 bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 px-6 py-2 rounded-sm font-bold text-sm uppercase tracking-wider transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
                Use This Draft
              </button>
           </div>

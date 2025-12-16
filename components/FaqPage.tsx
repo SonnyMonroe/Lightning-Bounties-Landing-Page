@@ -1,329 +1,415 @@
-import React from 'react';
-import { ChevronDown, HelpCircle, ArrowLeft } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ChevronDown, Search, ArrowLeft, Zap, Shield, Code, Sparkles, HelpCircle, AlertCircle } from 'lucide-react';
 
 interface FaqPageProps {
   onBack: () => void;
 }
 
-const FaqItem = ({ question, children }: { question: React.ReactNode, children?: React.ReactNode }) => {
+type Category = 'General' | 'Hunters' | 'Posters' | 'Features';
+
+interface FaqItem {
+  id: string;
+  category: Category;
+  question: string;
+  answer: React.ReactNode;
+}
+
+// Reusable formatting components for consistency and high contrast
+const Strong: React.FC<{ children: React.ReactNode; colorClass?: string }> = ({ children, colorClass }) => (
+  <strong className={`font-bold ${colorClass || 'text-black dark:text-white'}`}>
+    {children}
+  </strong>
+);
+
+const ExternalLink: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => (
+  <a 
+    href={href} 
+    target="_blank" 
+    rel="noopener noreferrer"
+    className="text-blue-950 dark:text-cyan-300 hover:text-blue-800 dark:hover:text-cyan-100 underline decoration-2 underline-offset-2 font-bold transition-colors"
+  >
+    {children}
+  </a>
+);
+
+const Badge: React.FC<{ children: React.ReactNode; variant: 'orange' | 'green' | 'purple' | 'cyan' }> = ({ children, variant }) => {
+  // Using high contrast borders and text
+  const styles = {
+    orange: 'bg-orange-50 text-orange-950 border-orange-400 dark:bg-orange-900/60 dark:text-white dark:border-orange-500',
+    green: 'bg-green-50 text-green-950 border-green-400 dark:bg-green-900/60 dark:text-white dark:border-green-500',
+    purple: 'bg-purple-50 text-purple-950 border-purple-400 dark:bg-purple-900/60 dark:text-white dark:border-purple-500',
+    cyan: 'bg-cyan-50 text-cyan-950 border-cyan-400 dark:bg-cyan-900/60 dark:text-white dark:border-cyan-500',
+  };
+
   return (
-    <details className="group border-b border-slate-200 dark:border-slate-800 last:border-0">
-      <summary className="flex justify-between items-center cursor-pointer py-6 w-full list-none text-lg md:text-xl font-bold text-slate-900 dark:text-white transition-colors font-display uppercase tracking-wide select-none hover:text-cyan-900 dark:hover:text-cyan-400">
-        <span className="pr-6 leading-tight flex-1">{question}</span>
-        <div className="shrink-0 flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full 
-                        bg-slate-100 dark:bg-slate-800 
-                        border border-slate-300 dark:border-slate-600
-                        text-slate-700 dark:text-slate-300
-                        group-hover:bg-white dark:group-hover:bg-slate-700
-                        group-hover:border-cyan-700 dark:group-hover:border-cyan-400
-                        group-hover:text-cyan-900 dark:group-hover:text-cyan-400
-                        group-open:bg-cyan-50 dark:group-open:bg-cyan-900/30
-                        group-open:border-cyan-800 dark:group-open:border-cyan-400
-                        group-open:text-cyan-900 dark:group-open:text-cyan-300
-                        transition-all duration-300 shadow-sm">
-            <ChevronDown className="transition-transform duration-300 group-open:rotate-180" size={20} strokeWidth={2.5} />
-        </div>
-      </summary>
-      <div className="pb-8 pr-4 md:pr-12 text-slate-700 dark:text-slate-200 leading-relaxed space-y-4 text-base md:text-lg font-medium animate-in fade-in slide-in-from-top-1 duration-200 [&_a]:text-cyan-800 [&_a]:dark:text-cyan-400 [&_a]:underline [&_a]:decoration-2 [&_a]:underline-offset-2 [&_a]:font-bold hover:[&_a]:text-cyan-950 hover:[&_a]:dark:text-cyan-200">
-        {children}
-      </div>
-    </details>
+    <span className={`inline-block px-2 py-0.5 rounded-md font-bold text-sm border ${styles[variant]} mx-1 align-middle`}>
+      {children}
+    </span>
   );
 };
 
-export const FaqPage: React.FC<FaqPageProps> = ({ onBack }) => {
+const Callout: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div className="bg-white dark:bg-[#1a1a1a] p-4 rounded-lg border border-black dark:border-white my-4 shadow-sm">
+    <p className="font-bold text-black dark:text-white mb-2 uppercase text-xs tracking-wider flex items-center gap-2 border-b border-black/10 dark:border-white/10 pb-2">
+      <AlertCircle size={14} className="text-black dark:text-white"/> {title}
+    </p>
+    <div className="text-black dark:text-white font-medium text-base leading-relaxed">
+      {children}
+    </div>
+  </div>
+);
+
+const List: React.FC<{ items: React.ReactNode[]; type?: 'ul' | 'ol' }> = ({ items, type = 'ul' }) => {
+  const Component = type;
   return (
-    <div className="pt-32 pb-20 min-h-screen bg-slate-50 dark:bg-black">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+    <Component className={`pl-6 space-y-2 my-3 ${type === 'ul' ? 'list-disc' : 'list-decimal'} marker:text-black dark:marker:text-white marker:font-bold`}>
+      {items.map((item, idx) => (
+        <li key={idx} className="text-black dark:text-white pl-2 font-medium">
+          {item}
+        </li>
+      ))}
+    </Component>
+  );
+};
+
+// Data Definition
+const FAQ_DATA: FaqItem[] = [
+  // --- General ---
+  {
+    id: 'gen-1',
+    category: 'General',
+    question: "What's Lightning Bounties?",
+    answer: (
+      <>
+        <p>Lightning Bounties is a Bitcoin-powered bug bounty platform that seamlessly integrates with GitHub’s familiar workflows, allowing developers to earn Bitcoin for fixing bugs and contributing to open-source projects.</p>
+        <p className="mt-4">Getting started is simple—no installations or complicated setups required. Just visit <ExternalLink href="https://app.lightningbounties.com/">app.lightningbounties.com</ExternalLink>, log in with your GitHub account, and you’re ready to post or solve bounties instantly.</p>
+      </>
+    )
+  },
+  {
+    id: 'gen-2',
+    category: 'General',
+    question: "Who Typically Uses Lightning Bounties?",
+    answer: (
+      <>
+        <p>Lightning Bounties caters to two primary groups:</p>
+        <div className="mt-4 space-y-3">
+          <p><Badge variant="orange">Developers</Badge> can showcase their skills, earn Bitcoin, and contribute to the growth of open-source technology.</p>
+          <p><Badge variant="green">Organizations</Badge> can tap into a talented pool of developers to improve the quality and security of their software projects.</p>
+        </div>
+      </>
+    )
+  },
+  {
+    id: 'gen-3',
+    category: 'General',
+    question: "Why Link My GitHub Account?",
+    answer: (
+      <>
+         <p>Linking your GitHub account is essential for verifying your contributions. It allows us to track Pull Requests and Issues automatically via the GitHub API.</p>
+         <Callout title="TL;DR">Linking your GitHub account streamlines bug hunting, promotes collaboration, and ensures proper reward distribution when your code is merged.</Callout>
+         <p className="text-sm">See <ExternalLink href="https://docs.lightningbounties.com/">docs</ExternalLink> for more detailed info.</p>
+      </>
+    )
+  },
+  {
+    id: 'gen-4',
+    category: 'General',
+    question: "Is there a Token?",
+    answer: (
+      <p><strong>Nope.</strong> Bitcoin is the best currency for Lightning Bounties because it’s decentralized, secure, and globally accessible. We use Bitcoin (specifically Satoshis) for all payments. No speculative tokens, just sound money.</p>
+    )
+  },
+
+  // --- Hunters ---
+  {
+    id: 'hunter-1',
+    category: 'Hunters',
+    question: "How Do I Find Bounties?",
+    answer: (
+      <>
+        <p>Visit <ExternalLink href="https://app.lightningbounties.com/">app.lightningbounties.com</ExternalLink> and browse the "Available Bounties" section. You can filter by:</p>
+        <List items={[
+          "Technology / Language",
+          "Reward Amount",
+          "Time Commitment",
+          "Repository Popularity"
+        ]} />
+      </>
+    )
+  },
+  {
+    id: 'hunter-2',
+    category: 'Hunters',
+    question: "How Do I Submit a Solution?",
+    answer: (
+      <List type="ol" items={[
+        "Fork the GitHub repository containing the issue",
+        "Create a branch for your solution",
+        "Make your changes and commit them",
+        "Submit a Pull Request referencing the issue number (e.g. 'closes #123')",
+        "Once merged by the maintainer, your reward is processed"
+      ]} />
+    )
+  },
+  {
+    id: 'hunter-3',
+    category: 'Hunters',
+    question: "How Do I Withdraw Earnings?",
+    answer: (
+      <>
+        <p>Withdrawals are instant via the Lightning Network:</p>
+        <List type="ol" items={[
+          "Go to your Account Dashboard",
+          "Click 'Withdraw'",
+          "Generate a Lightning invoice from your own wallet (e.g., Phoenix, Wallet of Satoshi)",
+          "Paste the invoice",
+          "Confirm to receive funds instantly"
+        ]} />
+      </>
+    )
+  },
+  {
+    id: 'hunter-4',
+    category: 'Hunters',
+    question: "What Wallets Can I Use?",
+    answer: (
+      <>
+        <p>Any wallet supporting <Strong>Lightning Network (BOLT-11)</Strong> invoices works. Popular choices include:</p>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+          {['Phoenix', 'Muun', 'Breez', 'Wallet of Satoshi', 'Blue Wallet', 'Cash App'].map(wallet => (
+            <div key={wallet} className="flex items-center gap-2 bg-white dark:bg-[#1a1a1a] p-2 rounded border border-black/20 dark:border-white/20 shadow-sm text-sm font-bold text-black dark:text-white">
+              <div className="w-2 h-2 rounded-full bg-cyan-500" /> {wallet}
+            </div>
+          ))}
+        </div>
+      </>
+    )
+  },
+
+  // --- Posters ---
+  {
+    id: 'poster-1',
+    category: 'Posters',
+    question: "How Do I Post a Bounty?",
+    answer: (
+      <>
+        <Callout title="Quick Start">
+          Log in, paste the GitHub Issue URL, set a reward in Sats, and pay the invoice. That's it.
+        </Callout>
+        <List type="ol" items={[
+          "Log in to Lightning Bounties",
+          "Click 'Post a Bounty'",
+          "Paste the GitHub Issue URL",
+          "Set reward amount (sats) and lock-time",
+          "Pay the invoice to fund the bounty escrow"
+        ]} />
+      </>
+    )
+  },
+  {
+    id: 'poster-2',
+    category: 'Posters',
+    question: "What is a Lock Time?",
+    answer: (
+      <>
+        <p>A <Strong>lock time</Strong> guarantees that the reward remains available for a set period (e.g., two weeks). It gives developers confidence that the funds are actually there and won't be pulled while they are working.</p>
+        <p className="mt-2 text-sm text-black dark:text-white">After the lock time expires, if the issue is unsolved, you can reclaim your funds.</p>
+      </>
+    )
+  },
+  {
+    id: 'poster-3',
+    category: 'Posters',
+    question: "Can I Post for Any Repo?",
+    answer: (
+      <p>Yes! You can post bounties for <Strong>any</Strong> open-source project on GitHub, even if you are not the owner. This is great for prioritizing bugs in libraries you depend on.</p>
+    )
+  },
+
+  // --- Features ---
+  {
+    id: 'feat-1',
+    category: 'Features',
+    question: "Anonymous Rewards",
+    answer: (
+      <p>Anonymous Rewards allows users to contribute sats to bounties privately. Your identity remains hidden on the public leaderboard, but you still support the open-source ecosystem.</p>
+    )
+  },
+  {
+    id: 'feat-2',
+    category: 'Features',
+    question: "Crowdfunding / Collaborative Funding",
+    answer: (
+      <p>Multiple users can contribute to a single bounty. If an issue is important to many people, they can all chip in to raise the reward amount, attracting better talent faster.</p>
+    )
+  },
+  {
+    id: 'feat-3',
+    category: 'Features',
+    question: "Add Without Login",
+    answer: (
+      <p>This feature enables anyone to contribute sats to existing bounties without creating an account. It leverages address verification for security, making it dead simple for drive-by contributors to support an issue.</p>
+    )
+  }
+];
+
+export const FaqPage: React.FC<FaqPageProps> = ({ onBack }) => {
+  const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState<Category | 'All'>('All');
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+
+  const toggleItem = (id: string) => {
+    setOpenItems(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const filteredData = useMemo(() => {
+    return FAQ_DATA.filter(item => {
+      const matchesSearch = item.question.toLowerCase().includes(search.toLowerCase()) || 
+                            (typeof item.answer === 'string' && item.answer.toLowerCase().includes(search.toLowerCase()));
+      const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [search, activeCategory]);
+
+  const categories: (Category | 'All')[] = ['All', 'General', 'Hunters', 'Posters', 'Features'];
+
+  return (
+    <div className="pt-28 pb-24 min-h-screen bg-slate-50 dark:bg-black text-black dark:text-white transition-colors duration-300 font-sans relative z-20">
+      
+      {/* --- Header Section --- */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <button 
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-700 dark:text-slate-400 hover:text-cyan-900 dark:hover:text-mv-cyan transition-colors mb-8 group font-bold text-sm uppercase tracking-wider font-display"
+            className="flex items-center gap-2 text-black dark:text-white hover:text-blue-900 dark:hover:text-cyan-400 transition-colors mb-8 group font-bold text-sm uppercase tracking-wider font-display bg-white dark:bg-white/10 py-2.5 px-5 rounded-full border border-black/20 dark:border-white/20 shadow-sm"
         >
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
             Back to Home
         </button>
 
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-full mb-6 ring-1 ring-slate-200 dark:ring-slate-700 shadow-sm">
-            <HelpCircle size={40} className="text-cyan-800 dark:text-cyan-400" />
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white dark:bg-[#111] border border-black/10 dark:border-white/10 text-black dark:text-white shadow-lg mb-4">
+            <HelpCircle size={32} strokeWidth={2.5} />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-slate-900 dark:text-white font-display uppercase tracking-tight mb-6 drop-shadow-sm">
-            Lightning Bounties <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-purple-700 dark:from-cyan-400 dark:to-purple-400">FAQ</span>
+          <h1 className="text-4xl md:text-6xl font-bold font-display uppercase tracking-tight text-black dark:text-white drop-shadow-sm">
+            Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-purple-700 dark:from-cyan-400 dark:to-purple-400">Questions</span>
           </h1>
-          <p className="text-xl md:text-2xl text-slate-700 dark:text-slate-200 max-w-2xl mx-auto font-bold">
-            Everything you need to know about earning Bitcoin for code.
+          <p className="text-lg md:text-xl text-black dark:text-white font-medium max-w-2xl mx-auto leading-relaxed">
+            Everything you need to know about earning Bitcoin for code, posting bounties, and our platform features.
           </p>
         </div>
+      </div>
 
-        <div className="space-y-16">
-          {/* General Questions */}
-          <section>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-b-2 border-slate-200 dark:border-slate-800 pb-4 font-display uppercase tracking-wider flex items-center gap-3">
-              <span className="w-1.5 h-8 bg-cyan-700 dark:bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.5)]"></span>
-              General Questions
-            </h2>
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 px-6 md:px-8 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
-              <FaqItem question="What's Lightning Bounties?">
-                <p>Lightning Bounties is a Bitcoin-powered bug bounty platform that seamlessly integrates with GitHub’s familiar workflows, allowing developers to earn Bitcoin for fixing bugs and contributing to open-source projects.</p>
-                <p>Getting started is simple—no installations or complicated setups required. Just visit <a href="https://app.lightningbounties.com/">app.lightningbounties.com</a>, log in with your GitHub account, and you’re ready to post or solve bounties instantly. Lightning Bounties makes it easy for anyone to contribute their skills, support open-source innovation, and get rewarded in Bitcoin.</p>
-              </FaqItem>
-              
-              <FaqItem question="Who Typically Uses Lightning Bounties?">
-                <p>Lightning Bounties caters to two primary groups: <span className="inline-block bg-orange-100 dark:bg-orange-900/30 text-orange-900 dark:text-orange-100 px-2 py-0.5 rounded-md font-bold border border-orange-200 dark:border-orange-700">developers</span> and <span className="inline-block bg-green-100 dark:bg-green-900/30 text-green-900 dark:text-green-100 px-2 py-0.5 rounded-md font-bold border border-green-200 dark:border-green-700">organizations</span>.</p>
-                <p><strong className="text-orange-900 dark:text-orange-200">Developers</strong> can showcase their skills, earn Bitcoin, and contribute to the growth of open-source technology.</p>
-                <p><strong className="text-green-900 dark:text-green-200">Organizations</strong> can tap into a talented pool of developers to improve the quality and security of their software projects.</p>
-              </FaqItem>
-
-              <FaqItem question="Why Do I Have To Link My GitHub Account To Use Lightning Bounties?">
-                 <p>See <a href="https://docs.lightningbounties.com/docs/getting-started/first-time-onboarding/github-auth-and-lightning-bounties">github-auth-and-lightning-bounties</a> for more detailed info.</p>
-                 <div className="bg-slate-100 dark:bg-slate-800/50 p-5 rounded-lg border-l-4 border-cyan-700 dark:border-cyan-400 mt-3 shadow-inner">
-                    <p className="font-bold text-slate-900 dark:text-white mb-1 uppercase text-xs tracking-wider">TL;DR</p>
-                    <p className="italic text-slate-800 dark:text-slate-200 font-medium">Linking your GitHub account streamlines bug hunting, promotes collaboration, and ensures proper reward distribution.</p>
-                 </div>
-              </FaqItem>
-
-              <FaqItem question="Does Lightning Bounties Have a Token or Plan to Launch one in the Future?">
-                <p>Nope. Bitcoin is the best currency for Lightning Bounties because it’s decentralized, secure, and globally accessible. It aligns with our ethos of empowering developers without relying on speculative tokens.</p>
-              </FaqItem>
-
-              <FaqItem question="How Does Lightning Bounties Work?">
-                <p>Users post bounties for GitHub issues, developers solve them, and once a pull request is merged, the contributor is instantly rewarded in Bitcoin via the Lightning Network.</p>
-              </FaqItem>
-
-              <FaqItem question="Do I Need to Install Anything to Use Lightning Bounties?">
-                <p>No installations are required. Simply log in with your GitHub account to get started.</p>
-              </FaqItem>
-
-              <FaqItem question="Who Can Use Lightning Bounties?">
-                <p>Anyone with a GitHub account can use Lightning Bounties to post or solve bounties—no restrictions based on location or experience level.</p>
-              </FaqItem>
+      {/* --- Controls Section (Search & Tabs) --- */}
+      <div className="sticky top-20 z-30 bg-slate-50/95 dark:bg-black/95 backdrop-blur-md border-y border-black/10 dark:border-white/10 py-4 mb-12 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 md:space-y-0 md:flex md:items-center md:justify-between gap-6">
+          
+          {/* Search Bar */}
+          <div className="relative flex-1 max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-black/50 dark:text-white/50" />
             </div>
-          </section>
+            <input
+              type="text"
+              placeholder="Search questions..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="block w-full pl-10 pr-3 py-3 border border-black/20 dark:border-white/20 rounded-lg leading-5 bg-white dark:bg-[#111] text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all font-bold shadow-sm"
+            />
+          </div>
 
-          {/* Bounty Hunter Questions */}
-          <section>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-b-2 border-slate-200 dark:border-slate-800 pb-4 font-display uppercase tracking-wider flex items-center gap-3">
-              <span className="w-1.5 h-8 bg-purple-700 dark:bg-purple-400 rounded-full shadow-[0_0_10px_rgba(192,132,252,0.5)]"></span>
-              Bounty Hunter Questions
-            </h2>
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 px-6 md:px-8 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
-              <FaqItem question="How Do I Find Bounties to Work On?">
-                <p>Visit <a href="https://app.lightningbounties.com/">app.lightningbounties.com</a> and browse the "Available Bounties" section. You can filter bounties by:</p>
-                <ul className="list-disc pl-6 space-y-2 mt-2 marker:text-cyan-700 dark:marker:text-cyan-400 font-medium">
-                  <li>Technology/programming language</li>
-                  <li>Reward amount</li>
-                  <li>Time commitment</li>
-                  <li>Repository popularity</li>
-                </ul>
-                <p className="mt-4">Find an issue that matches your skills and interests, then click to view details about the task and reward.</p>
-              </FaqItem>
-
-              <FaqItem question="How Do I Submit a Solution?">
-                <ol className="list-decimal pl-6 space-y-2 marker:font-bold marker:text-slate-900 dark:marker:text-white">
-                  <li>Fork the GitHub repository containing the issue</li>
-                  <li>Create a branch for your solution</li>
-                  <li>Make your changes and commit them</li>
-                  <li>Submit a Pull Request referencing the issue number</li>
-                  <li>Once merged by the repository maintainer, your reward will be automatically processed</li>
-                </ol>
-              </FaqItem>
-
-              <FaqItem question="How Are Rewards Distributed?">
-                <p>Once your pull request is merged, the GitHub API acts as an oracle to verify your contribution. The Lightning Bounties platform then automatically sends the reward to your account, where you can withdraw it to your Lightning wallet.</p>
-              </FaqItem>
-
-              <FaqItem question="How Do I Withdraw My Earnings?">
-                 <ol className="list-decimal pl-6 space-y-2 marker:font-bold marker:text-slate-900 dark:marker:text-white">
-                  <li>Visit your Lightning Bounties account dashboard</li>
-                  <li>Click on "Withdraw"</li>
-                  <li>Generate a Lightning invoice from your wallet</li>
-                  <li>Paste the invoice into the withdrawal field</li>
-                  <li>Confirm the withdrawal</li>
-                  <li>Receive funds instantly in your Lightning wallet</li>
-                 </ol>
-              </FaqItem>
-
-              <FaqItem question="What Happens if My Solution is Rejected?">
-                 <p>If your solution is rejected, the bounty remains open for you or others to attempt again. The repository maintainer typically provides feedback on why the solution wasn't accepted, giving you an opportunity to improve and resubmit.</p>
-              </FaqItem>
-
-              <FaqItem question="Can I Work on Multiple Bounties at Once?">
-                 <p>Yes! You can work on as many bounties as you'd like simultaneously. There are no restrictions on the number of bounties you can tackle at one time.</p>
-              </FaqItem>
-
-              <FaqItem question="Do I Need to Run a Lightning Node to Receive Payments?">
-                 <p>Nope, you don't need to run a node to use the Lightning Network. You can simply use a lightning wallet app to send and receive payments.</p>
-              </FaqItem>
-
-              <FaqItem question="What Lightning Wallets Can I Use?">
-                 <p>Popular Lightning Network wallets include:</p>
-                 <ul className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
-                  {['Phoenix', 'Muun', 'Breez', 'Wallet of Satoshi', 'Blue Wallet', 'Cash App'].map(wallet => (
-                    <li key={wallet} className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 px-4 py-3 rounded-lg text-sm font-bold border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white shadow-sm hover:border-cyan-700 dark:hover:border-cyan-400 hover:bg-white dark:hover:bg-slate-700 transition-all">
-                      <span className="w-2 h-2 rounded-full bg-cyan-700 dark:bg-cyan-400 shadow-[0_0_5px_rgba(0,240,255,0.5)]"></span>
-                      {wallet}
-                    </li>
-                  ))}
-                 </ul>
-                 <p className="mt-4">Any Lightning-compatible wallet that supports BOLT-11 invoices will work with Lightning Bounties.</p>
-              </FaqItem>
-
-              <FaqItem question="How Do I Convert Sats to My Local Currency?">
-                 <p>After withdrawing to your Lightning wallet, you can:</p>
-                 <ol className="list-decimal pl-6 space-y-2 marker:font-bold marker:text-slate-900 dark:marker:text-white">
-                  <li>Transfer to an exchange that supports Lightning Network deposits</li>
-                  <li>Convert to your local currency on the exchange</li>
-                  <li>Withdraw to your bank account</li>
-                 </ol>
-                 <p className="mt-4">Alternatively, some Lightning wallets offer direct conversion features.</p>
-              </FaqItem>
-
-              <FaqItem question="Why Might My Lightning Withdrawal Fail?">
-                 <p>Lightning Network transactions can fail for a few common reasons:</p>
-                 <ul className="list-disc pl-6 space-y-2 marker:text-red-600 dark:marker:text-red-400">
-                  <li>Not having enough funds in your channel to cover the payment</li>
-                  <li>Routing issues in the Lightning Network</li>
-                  <li>Using an expired invoice</li>
-                  <li>Network congestion</li>
-                 </ul>
-                 <p className="mt-4 font-bold text-slate-900 dark:text-white bg-yellow-100 dark:bg-yellow-900/20 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700/50 inline-block text-sm">💡 Tip: Keep approximately 2% of your withdrawal amount in your account to cover Lightning Network routing fees.</p>
-              </FaqItem>
-            </div>
-          </section>
-
-           {/* Posting a Bounty */}
-           <section>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-b-2 border-slate-200 dark:border-slate-800 pb-4 font-display uppercase tracking-wider flex items-center gap-3">
-              <span className="w-1.5 h-8 bg-blue-700 dark:bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
-              Posting a Bounty
-            </h2>
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 px-6 md:px-8 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
-              <FaqItem question="How Do I Post a Bounty?">
-                <div className="bg-slate-100 dark:bg-slate-800/50 p-5 rounded-lg border-l-4 border-cyan-700 dark:border-cyan-400 mb-5 shadow-inner">
-                    <p className="font-bold text-slate-900 dark:text-white mb-1 uppercase text-xs tracking-wider">TL;DR</p>
-                    <p className="italic text-slate-800 dark:text-slate-200 font-medium">Log in with your GitHub account, copy-paste the issue URL, set a reward amount in Bitcoin, and post it in just a few clicks.</p>
-                </div>
-                <ol className="list-decimal pl-6 space-y-2 marker:font-bold marker:text-slate-900 dark:marker:text-white">
-                  <li>Log in to Lightning Bounties with your GitHub account</li>
-                  <li>Click "Post a Bounty"</li>
-                  <li>Enter the URL of the GitHub issue</li>
-                  <li>Set the reward amount in sats</li>
-                  <li>Define the lock time period</li>
-                  <li>Submit the bounty</li>
-                 </ol>
-              </FaqItem>
-
-              <FaqItem question="Can I Increase the Reward for an Existing Bounty?">
-                 <p className="font-bold text-slate-900 dark:text-white mb-2">Yes, you can increase the reward for an open bounty at any time by adding more sats (Bitcoin micropayments).</p>
-                 <p>This is useful if you want to attract more attention to a high-priority issue or if the complexity turned out to be greater than initially estimated.</p>
-              </FaqItem>
-
-              <FaqItem question="What Happens If No One Solves My Issue?">
-                 <p>If no one solves your issue, you can manually expire the bounty after the lock time ends and reclaim your funds.</p>
-              </FaqItem>
-
-              <FaqItem question="How Do I Review Submitted Solutions?">
-                 <p>You'll review solutions through GitHub's standard pull request workflow:</p>
-                 <ol className="list-decimal pl-6 space-y-2 mt-2 marker:font-bold marker:text-slate-900 dark:marker:text-white">
-                  <li>Receive a notification when a PR is submitted</li>
-                  <li>Review the code changes</li>
-                  <li>Request changes or approve and merge the PR</li>
-                  <li>Once merged, the reward is automatically processed by Lightning Bounties</li>
-                 </ol>
-              </FaqItem>
-
-              <FaqItem question="How Do I Deposit Funds to Post Bounties?">
-                 <ol className="list-decimal pl-6 space-y-2 marker:font-bold marker:text-slate-900 dark:marker:text-white">
-                  <li>Log into your Lightning Bounties account</li>
-                  <li>Navigate to the "Deposit" section</li>
-                  <li>Generate a Lightning invoice in your Lightning Bounties account</li>
-                  <li>Pay the invoice using your Lightning wallet</li>
-                  <li>Funds will be credited to your account instantly</li>
-                 </ol>
-              </FaqItem>
-
-              <FaqItem question="What is a Bounty Lock Time?">
-                 <p className="font-bold text-slate-900 dark:text-white mb-2">A lock time guarantees that the reward remains available for a set period (e.g., two weeks) while developers work on solving the issue.</p>
-                 <p>The lock time ensures that funds stay committed to the bounty, giving developers confidence that they'll be paid for their work once completed.</p>
-              </FaqItem>
-
-              <FaqItem question="Can Multiple Users Fund a Single Bounty?">
-                 <p>Yes! Lightning Bounties supports crowdfunding for bounties. Multiple users can contribute sats to increase the reward for a single issue, making it more attractive to potential solvers.</p>
-              </FaqItem>
-
-              <FaqItem question="Can I Set Custom Requirements for Bounties?">
-                 <p>Yes! You can specify requirements in the GitHub issue description, such as:</p>
-                 <ul className="list-disc pl-6 space-y-2 mt-2 marker:text-slate-500 dark:marker:text-slate-400">
-                   <li>Required tests</li>
-                   <li>Performance criteria</li>
-                   <li>Documentation standards</li>
-                   <li>Compatibility requirements</li>
-                   <li>Code style guidelines</li>
-                 </ul>
-                 <p className="mt-4">These requirements will be visible to developers considering your bounty.</p>
-              </FaqItem>
-
-              <FaqItem question="Can I Post Bounties for Third-Party Projects?">
-                 <p>Yes! You can post bounties for any open-source project on GitHub, even if you're not the project owner.</p>
-              </FaqItem>
-
-              <FaqItem question="Can I Expire a Bounty Early?">
-                 <p>You can only expire a bounty and reclaim funds after the initial lock time has passed. This protection ensures developers have the promised time to work on solutions without the bounty being unexpectedly withdrawn.</p>
-              </FaqItem>
-            </div>
-          </section>
-
-           {/* Features FAQ */}
-           <section>
-             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-b-2 border-slate-200 dark:border-slate-800 pb-4 font-display uppercase tracking-wider flex items-center gap-3">
-              <span className="w-1.5 h-8 bg-slate-800 dark:bg-slate-200 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.2)]"></span>
-              Lightning Bounties Features
-            </h2>
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 px-6 md:px-8 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
-               <FaqItem question="What are Anonymous Rewards?">
-                  <p>Anonymous Rewards allows logged-in users to contribute sats to bounties privately, ensuring their identity remains hidden while still supporting open-source development. This feature enables users to fund bounties discreetly while maintaining full control over their contributions.</p>
-               </FaqItem>
-               
-               <FaqItem question="How do Crowdfunding Bounties work?">
-                  <p>The Collaborative Funding feature allows multiple users to contribute sats (Bitcoin microtransactions) to fund a single bounty. This enables community-driven funding for important issues and helps bounties grow faster by allowing multiple contributors.</p>
-               </FaqItem>
-
-               <FaqItem question="Do I need to install anything to use Lightning Bounties?">
-                  <p>No. Posting or solving a bounty requires no plugins, no installations on your computer, and no changes to your GitHub account. Simply log in with your GitHub account to get started.</p>
-               </FaqItem>
-
-               <FaqItem question="How does the GitHub API as Oracle feature work?">
-                  <p>This feature uses the GitHub API to automatically verify when solutions are accepted. Rewards are automatically sent to contributors once their pull request is successfully merged, preventing fraudulent claims.</p>
-               </FaqItem>
-
-               <FaqItem question="What is the Guaranteed Escrow feature?">
-                  <p>Rewards are locked for a set period (e.g., two weeks) to ensure bounty hunters know the reward will be available when they submit their solution. This lock time guarantees that the reward remains available while developers work on solving the issue.</p>
-               </FaqItem>
-
-               <FaqItem question="What happens if no one solves my bounty?">
-                  <p>After the lock time ends, you can manually expire the bounty and reclaim your funds if priorities change or the issue is resolved elsewhere. If no one solves your issue, you can reclaim your funds after the lock time expires.</p>
-               </FaqItem>
-
-               <FaqItem question="Can I post bounties for projects I don't own?">
-                  <p>Yes! You can post bounties on issues from popular open-source projects like VSCode, Django, or React—even if you're not the project owner. This allows you to support any open-source project on GitHub.</p>
-               </FaqItem>
-
-               <FaqItem question="What is the Add Without Login feature?">
-                  <p>Add Without Login enables anyone to contribute sats to existing bounties without needing to create an account or log in. This makes it easier for non-developers or those without GitHub accounts to get involved. The feature leverages Branta's address verification for security.</p>
-               </FaqItem>
-
-               <FaqItem question="Does Lightning Bounties work worldwide?">
-                  <p>Yes! Lightning Bounties operates globally with Bitcoin, bypassing region-restricted payment processors like Stripe. Anyone with a GitHub account can use Lightning Bounties to post or solve bounties—no restrictions based on location or experience level.</p>
-               </FaqItem>
-
-               <FaqItem question="How long does it take to post a bounty?">
-                  <p>It takes just 5 clicks and a single copy-paste of a URL to post a bounty—under 30 seconds from start to finish. Getting started is simple—no installations or complicated setups required.</p>
-               </FaqItem>
-            </div>
-          </section>
+          {/* Category Tabs */}
+          <div className="flex overflow-x-auto pb-1 md:pb-0 gap-2 no-scrollbar">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`
+                  whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider font-display transition-all border shadow-sm
+                  ${activeCategory === cat 
+                    ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white shadow-md transform scale-105' 
+                    : 'bg-white text-black border-black/10 hover:border-black hover:bg-white dark:bg-[#111] dark:text-white dark:border-white/10 dark:hover:border-white'}
+                `}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* --- FAQ List --- */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        {filteredData.length === 0 ? (
+          <div className="text-center py-20 bg-white dark:bg-[#111] rounded-2xl border border-dashed border-black/20 dark:border-white/20 shadow-sm">
+            <Search className="h-12 w-12 text-black/30 dark:text-white/30 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-black dark:text-white">No questions found</h3>
+            <p className="text-black/60 dark:text-white/60 mt-2 font-medium">Try adjusting your search terms or category.</p>
+            <button onClick={() => { setSearch(''); setActiveCategory('All'); }} className="mt-6 text-black dark:text-white font-bold hover:underline uppercase tracking-wide text-sm">Clear Filters</button>
+          </div>
+        ) : (
+          filteredData.map((item) => (
+            <div 
+              key={item.id} 
+              className={`
+                group bg-white dark:bg-[#111] rounded-xl border transition-all duration-200
+                ${openItems[item.id] 
+                  ? 'border-black dark:border-white shadow-xl ring-1 ring-black/5 dark:ring-white/10' 
+                  : 'border-black/10 dark:border-white/10 hover:border-black/50 dark:hover:border-white/50 hover:shadow-md'}
+              `}
+            >
+              <button
+                onClick={() => toggleItem(item.id)}
+                className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
+                aria-expanded={openItems[item.id]}
+              >
+                <div className="flex items-start gap-4 pr-4">
+                  <div className={`
+                    mt-1 shrink-0 w-8 h-8 rounded-full flex items-center justify-center border
+                    ${openItems[item.id] 
+                      ? 'bg-black border-black text-white dark:bg-white dark:border-white dark:text-black' 
+                      : 'bg-slate-50 border-slate-200 text-slate-700 dark:bg-[#1a1a1a] dark:border-white/10 dark:text-white group-hover:border-black dark:group-hover:border-white transition-colors'}
+                  `}>
+                    {item.category === 'General' && <Zap size={16} />}
+                    {item.category === 'Hunters' && <Code size={16} />}
+                    {item.category === 'Posters' && <Shield size={16} />}
+                    {item.category === 'Features' && <Sparkles size={16} />}
+                  </div>
+                  <span className={`text-lg md:text-xl font-bold font-display uppercase tracking-wide leading-tight text-black dark:text-white ${openItems[item.id] ? 'underline decoration-2 underline-offset-4' : ''}`}>
+                    {item.question}
+                  </span>
+                </div>
+                <ChevronDown 
+                  className={`shrink-0 text-black/40 dark:text-white/40 transition-transform duration-200 ${openItems[item.id] ? 'rotate-180 text-black dark:text-white' : 'group-hover:text-black dark:group-hover:text-white'}`} 
+                  size={24} 
+                  strokeWidth={2.5}
+                />
+              </button>
+              
+              <div 
+                className={`
+                  grid transition-[grid-template-rows] duration-200 ease-out
+                  ${openItems[item.id] ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}
+                `}
+              >
+                <div className="overflow-hidden">
+                    <div className="p-6 pt-0 pl-[4.5rem] text-base md:text-lg text-black dark:text-white leading-relaxed font-medium">
+                    {item.answer}
+                    </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* --- Footer Hint --- */}
+      <div className="max-w-2xl mx-auto text-center mt-16 px-4">
+        <p className="text-black dark:text-white font-bold">
+          Still have questions? Check out our <ExternalLink href="https://docs.lightningbounties.com">Documentation</ExternalLink> or join the <ExternalLink href="https://discord.gg/lightningbounties">Community</ExternalLink>.
+        </p>
+      </div>
+
     </div>
   );
 };

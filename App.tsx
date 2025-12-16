@@ -6,6 +6,7 @@ import { HowItWorksPage } from './components/HowItWorksPage';
 import { TeamPage } from './components/TeamPage';
 import { PrivacyPolicyPage } from './components/PrivacyPolicyPage';
 import { TermsOfServicePage } from './components/TermsOfServicePage';
+import { AboutPage } from './components/AboutPage';
 import { BountyAssistant } from './components/BountyAssistant';
 import { LeaderboardTable } from './components/LeaderboardTable';
 import { OpenBountiesTable } from './components/OpenBountiesTable';
@@ -20,7 +21,7 @@ export const App: React.FC = () => {
   const [openBounties, setOpenBounties] = useState<UnclaimedIssue[]>([]);
   
   // Navigation State
-  const [currentView, setCurrentView] = useState<'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about'>('home');
 
   // Theme State
   const [darkMode, setDarkMode] = useState(() => {
@@ -57,6 +58,7 @@ export const App: React.FC = () => {
       if (hash === '#team') { setCurrentView('team'); return; }
       if (hash === '#privacy') { setCurrentView('privacy'); return; }
       if (hash === '#terms') { setCurrentView('terms'); return; }
+      if (hash === '#about') { setCurrentView('about'); return; }
       
       // If hash is home-related or empty, go to home
       if (!hash || hash === '#home' || hash === '#bounties' || hash === '#features' || hash === '#leaderboard') {
@@ -78,13 +80,11 @@ export const App: React.FC = () => {
   }, [currentView]);
 
   // Handle View Navigation
-  const navigateTo = (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms') => {
+  const navigateTo = (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about') => {
     if (view === 'home') {
-        // If navigating home, clear the hash unless we are using an anchor (handled by Header)
-        // If we are already at home, we might want to just scroll top or do nothing specific regarding hash if it's empty
         setCurrentView('home');
-        // Clear hash to nice URL
-        if (window.location.hash && window.location.hash !== '#home' && window.location.hash !== '#bounties' && window.location.hash !== '#features' && window.location.hash !== '#leaderboard') {
+        // Always clear hash when going home to ensure clean URL
+        if (window.location.hash) {
             history.pushState("", document.title, window.location.pathname + window.location.search);
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -152,6 +152,8 @@ export const App: React.FC = () => {
               return <PrivacyPolicyPage onBack={() => navigateTo('home')} />;
           case 'terms':
               return <TermsOfServicePage onBack={() => navigateTo('home')} />;
+          case 'about':
+              return <AboutPage onBack={() => navigateTo('home')} />;
           case 'home':
           default:
               return (
@@ -165,7 +167,7 @@ export const App: React.FC = () => {
                   
                   <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     {/* Live BTC Price Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-mv-card/80 border border-slate-200 dark:border-mv-border backdrop-blur-md mb-8 shadow-sm dark:shadow-[0_0_20px_rgba(0,240,255,0.1)] hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-colors">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-mv-card/80 border border-slate-200 dark:border-mv-border backdrop-blur-md mb-8 shadow-sm dark:shadow-[0_0_20px_rgba(0,240,255,0.1)] hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-colors hover:shadow-md hover:scale-105 duration-300">
                       <div className="flex items-center gap-2">
                         <span className="relative flex h-2 w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -192,11 +194,11 @@ export const App: React.FC = () => {
                     </p>
                     
                     <div className="flex flex-col sm:flex-row justify-center gap-6">
-                      <button className="relative overflow-hidden group bg-transparent px-8 py-4 rounded-sm font-bold text-lg uppercase tracking-wider font-display text-white transition-all duration-300 shadow-xl dark:shadow-none hover:shadow-2xl hover:-translate-y-0.5">
+                      <button className="relative overflow-hidden group bg-transparent px-8 py-4 rounded-sm font-bold text-lg uppercase tracking-wider font-display text-white transition-all duration-300 shadow-xl dark:shadow-none hover:shadow-2xl hover:shadow-cyan-500/20 dark:hover:shadow-cyan-500/40 hover:-translate-y-1 active:translate-y-0">
                         <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-mv-cyan-dark to-mv-purple-dark dark:from-[#00f0ff] dark:to-[#bc13fe] opacity-90 group-hover:opacity-100 transition-opacity"></div>
-                        <span className="relative z-10 flex items-center gap-2">Start Earning <ArrowRight size={20} /></span>
+                        <span className="relative z-10 flex items-center gap-2">Start Earning <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" /></span>
                       </button>
-                      <button className="px-8 py-4 rounded-sm font-bold text-lg uppercase tracking-wider font-display text-slate-900 dark:text-white border border-slate-300 dark:border-mv-border hover:border-mv-cyan-dark dark:hover:border-mv-cyan hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-colors bg-white/50 dark:bg-mv-card/50">
+                      <button className="px-8 py-4 rounded-sm font-bold text-lg uppercase tracking-wider font-display text-slate-900 dark:text-white border border-slate-300 dark:border-mv-border hover:border-mv-cyan-dark dark:hover:border-mv-cyan hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-all duration-300 bg-white/50 dark:bg-mv-card/50 hover:bg-slate-50 dark:hover:bg-white/5 hover:-translate-y-1 active:translate-y-0 shadow-sm hover:shadow-lg">
                         Post a Bounty
                       </button>
                     </div>
@@ -207,8 +209,8 @@ export const App: React.FC = () => {
                 <section className="relative z-10 py-12 bg-slate-50/50 dark:bg-mv-card/30 border-y border-slate-200 dark:border-mv-border backdrop-blur-sm transition-colors duration-300">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-                      <div className="flex flex-col items-center text-center p-4 group">
-                        <div className="w-12 h-12 bg-cyan-100 dark:bg-mv-cyan/10 rounded-lg flex items-center justify-center mb-3 border border-cyan-200 dark:border-mv-cyan/20 group-hover:border-mv-cyan-dark dark:group-hover:border-mv-cyan/50 transition-colors">
+                      <div className="flex flex-col items-center text-center p-4 group hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
+                        <div className="w-12 h-12 bg-cyan-100 dark:bg-mv-cyan/10 rounded-lg flex items-center justify-center mb-3 border border-cyan-200 dark:border-mv-cyan/20 group-hover:border-mv-cyan-dark dark:group-hover:border-mv-cyan/50 transition-colors group-hover:scale-110 duration-300">
                           <Database className="text-mv-cyan-dark dark:text-mv-cyan" size={24} />
                         </div>
                         <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display">
@@ -217,8 +219,8 @@ export const App: React.FC = () => {
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors">Open Bounties</div>
                       </div>
 
-                      <div className="flex flex-col items-center text-center p-4 group">
-                        <div className="w-12 h-12 bg-purple-100 dark:bg-mv-purple/10 rounded-lg flex items-center justify-center mb-3 border border-purple-200 dark:border-mv-purple/20 group-hover:border-mv-purple-dark dark:group-hover:border-mv-purple/50 transition-colors">
+                      <div className="flex flex-col items-center text-center p-4 group hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
+                        <div className="w-12 h-12 bg-purple-100 dark:bg-mv-purple/10 rounded-lg flex items-center justify-center mb-3 border border-purple-200 dark:border-mv-purple/20 group-hover:border-mv-purple-dark dark:group-hover:border-mv-purple/50 transition-colors group-hover:scale-110 duration-300">
                           <GitBranch className="text-mv-purple-dark dark:text-mv-purple" size={24} />
                         </div>
                         <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display">
@@ -227,8 +229,8 @@ export const App: React.FC = () => {
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-mv-purple-dark dark:group-hover:text-mv-purple transition-colors">Unique Repos</div>
                       </div>
 
-                      <div className="flex flex-col items-center text-center p-4 group">
-                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/10 rounded-lg flex items-center justify-center mb-3 border border-blue-200 dark:border-blue-500/20 group-hover:border-blue-400 dark:group-hover:border-blue-500/50 transition-colors">
+                      <div className="flex flex-col items-center text-center p-4 group hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
+                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/10 rounded-lg flex items-center justify-center mb-3 border border-blue-200 dark:border-blue-500/20 group-hover:border-blue-400 dark:group-hover:border-blue-500/50 transition-colors group-hover:scale-110 duration-300">
                           <CheckCircle className="text-blue-600 dark:text-blue-500" size={24} />
                         </div>
                         <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display">
@@ -237,8 +239,8 @@ export const App: React.FC = () => {
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-500 transition-colors">Total Bounties</div>
                       </div>
 
-                      <div className="flex flex-col items-center text-center p-4 group">
-                        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/10 rounded-lg flex items-center justify-center mb-3 border border-emerald-200 dark:border-emerald-500/20 group-hover:border-emerald-400 dark:group-hover:border-emerald-500/50 transition-colors">
+                      <div className="flex flex-col items-center text-center p-4 group hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
+                        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/10 rounded-lg flex items-center justify-center mb-3 border border-emerald-200 dark:border-emerald-500/20 group-hover:border-emerald-400 dark:group-hover:border-emerald-500/50 transition-colors group-hover:scale-110 duration-300">
                           <Users className="text-emerald-600 dark:text-emerald-500" size={24} />
                         </div>
                         <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display">
@@ -247,8 +249,8 @@ export const App: React.FC = () => {
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">Total Developers</div>
                       </div>
 
-                      <div className="flex flex-col items-center text-center p-4 group col-span-2 md:col-span-1 lg:col-span-1">
-                        <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-500/10 rounded-lg flex items-center justify-center mb-3 border border-yellow-200 dark:border-yellow-500/20 group-hover:border-yellow-400 dark:group-hover:border-yellow-500/50 transition-colors">
+                      <div className="flex flex-col items-center text-center p-4 group col-span-2 md:col-span-1 lg:col-span-1 hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
+                        <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-500/10 rounded-lg flex items-center justify-center mb-3 border border-yellow-200 dark:border-yellow-500/20 group-hover:border-yellow-400 dark:group-hover:border-yellow-500/50 transition-colors group-hover:scale-110 duration-300">
                           <Zap className="text-yellow-600 dark:text-yellow-500" size={24} />
                         </div>
                         <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display font-mono">
@@ -262,11 +264,11 @@ export const App: React.FC = () => {
 
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-20">
                   <section id="leaderboard" className="scroll-mt-24">
-                     <LeaderboardTable developers={developers} />
+                     <LeaderboardTable developers={developers} btcPrice={btcPrice} />
                   </section>
 
                   <section id="bounties" className="scroll-mt-24">
-                     <OpenBountiesTable bounties={openBounties} />
+                     <OpenBountiesTable bounties={openBounties} btcPrice={btcPrice} />
                   </section>
                 </div>
 
@@ -286,67 +288,73 @@ export const App: React.FC = () => {
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {/* Card 1 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-1 flex flex-col h-full">
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30">
+                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
                           <Ban className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors">No Setup Required</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">No Setup Required</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
                           No plugins, no installations, no GitHub changes. Post a bounty in 5 clicks or claim one instantly. Just copy-paste a GitHub Issue URL and go.
                         </p>
                       </div>
                       
                       {/* Card 2 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-1 flex flex-col h-full">
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30">
+                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
                           <Zap className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors">Lightning-Fast Payments</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Lightning-Fast Payments</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
                           Bitcoin payouts via Lightning Network arrive in seconds, not days. No invoices, no wire transfers, no waiting—just instant global payments.
                         </p>
                       </div>
                       
                       {/* Card 3 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-1 flex flex-col h-full">
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30">
+                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
+                         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
                           <Globe className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors">Global Access</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Global Access</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
                           Bypass Stripe, PayPal, and region-locked payment processors. Bitcoin operates globally—anyone, anywhere can participate and earn.
                         </p>
                       </div>
 
                       {/* Card 4 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-1 flex flex-col h-full">
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30">
+                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
                           <HeartHandshake className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors">Crowdfunding</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Crowdfunding</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
                           Multiple contributors can fund a single bounty. Support issues on VSCode, Django, React—even if you're not the project owner.
                         </p>
                       </div>
 
                       {/* Card 5 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-1 flex flex-col h-full">
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30">
+                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
                           <CameraOff className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors">Anonymous Bounty Posting</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Anonymous Bounty Posting</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
                           Contribute to bounties without revealing your identity. Perfect for those who value privacy.
                         </p>
                       </div>
 
                       {/* Card 6 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-1 flex flex-col h-full">
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30">
+                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
                           <Lock className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors">Escrow Protection</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Escrow Protection</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
                           Bounties are locked in escrow for a set time (e.g., 2 weeks). Developers know the reward is secured before they start working.
                         </p>
                       </div>
@@ -365,7 +373,7 @@ export const App: React.FC = () => {
       
       {/* Background Grid Pattern - Adjusted for Light Mode */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+        <div className="absolute inset-0 bg-transparent dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-mv-dark/80 dark:to-mv-dark"></div>
       </div>
 

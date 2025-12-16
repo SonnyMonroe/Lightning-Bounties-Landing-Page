@@ -131,7 +131,7 @@ const NewsletterForm = () => {
 interface FooterProps {
   darkMode: boolean;
   toggleTheme: () => void;
-  onNavigate: (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms') => void;
+  onNavigate: (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about') => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ darkMode, toggleTheme, onNavigate }) => {
@@ -179,11 +179,11 @@ export const Footer: React.FC<FooterProps> = ({ darkMode, toggleTheme, onNavigat
                     <div className="flex flex-col gap-4">
                         <h3 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider font-display">Follow Us On:</h3>
                         <div className="flex gap-4 text-slate-600 dark:text-slate-400">
-                            <a href="https://x.com/LBounties" className="hover:text-slate-900 dark:hover:text-white hover:scale-110 transition-all focus:outline-none focus:text-slate-900 dark:focus:text-white focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="X (Twitter)" aria-label="Follow us on X (Twitter)"><X size={20} /></a>
-                            <a href="https://www.linkedin.com/company/lightning-bounties/" className="hover:text-blue-600 dark:hover:text-blue-500 hover:scale-110 transition-all focus:outline-none focus:text-blue-600 dark:focus:text-blue-500 focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="LinkedIn" aria-label="Follow us on LinkedIn"><Linkedin size={20} /></a>
-                            <a href="https://github.com/SonnyMonroe/Lightning-Issues" className="hover:text-slate-900 dark:hover:text-white hover:scale-110 transition-all focus:outline-none focus:text-slate-900 dark:focus:text-white focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="GitHub" aria-label="Follow us on GitHub"><Github size={20} /></a>
-                            <a href="https://primal.net/p/nprofile1qqsxjszwrjqxjetnfeh9r2kea3jyz4uqxedyawwq58f2cc4uqwtrq7gyjy2yn" className="hover:text-mv-purple-dark dark:hover:text-mv-purple hover:scale-110 transition-all focus:outline-none focus:text-mv-purple-dark dark:focus:text-mv-purple focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="Nostr" aria-label="Follow us on Nostr"><NostrIcon size={20} /></a>
-                            <a href="https://www.youtube.com/@LightningBounties" className="hover:text-red-500 hover:scale-110 transition-all focus:outline-none focus:text-red-500 focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="YouTube" aria-label="Subscribe to our YouTube channel"><Youtube size={20} /></a>
+                            <a href="https://x.com/LBounties" className="hover:text-slate-900 dark:hover:text-white hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-500/20 transition-all focus:outline-none focus:text-slate-900 dark:focus:text-white focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="X (Twitter)" aria-label="Follow us on X (Twitter)"><X size={20} /></a>
+                            <a href="https://www.linkedin.com/company/lightning-bounties/" className="hover:text-blue-600 dark:hover:text-blue-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/20 transition-all focus:outline-none focus:text-blue-600 dark:focus:text-blue-500 focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="LinkedIn" aria-label="Follow us on LinkedIn"><Linkedin size={20} /></a>
+                            <a href="https://github.com/SonnyMonroe/Lightning-Issues" className="hover:text-slate-900 dark:hover:text-white hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-500/20 transition-all focus:outline-none focus:text-slate-900 dark:focus:text-white focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="GitHub" aria-label="Follow us on GitHub"><Github size={20} /></a>
+                            <a href="https://primal.net/p/nprofile1qqsxjszwrjqxjetnfeh9r2kea3jyz4uqxedyawwq58f2cc4uqwtrq7gyjy2yn" className="hover:text-mv-purple-dark dark:hover:text-mv-purple hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/20 transition-all focus:outline-none focus:text-mv-purple-dark dark:focus:text-mv-purple focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="Nostr" aria-label="Follow us on Nostr"><NostrIcon size={20} /></a>
+                            <a href="https://www.youtube.com/@LightningBounties" className="hover:text-red-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-500/20 transition-all focus:outline-none focus:text-red-500 focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 rounded-sm" title="YouTube" aria-label="Subscribe to our YouTube channel"><Youtube size={20} /></a>
                         </div>
                     </div>
                 </div>
@@ -193,8 +193,9 @@ export const Footer: React.FC<FooterProps> = ({ darkMode, toggleTheme, onNavigat
                     <nav aria-label="Footer Platform Navigation">
                         <h3 className="font-bold text-slate-900 dark:text-white mb-6 text-sm uppercase tracking-wider font-display text-mv-cyan-dark dark:text-mv-cyan">Platform</h3>
                         <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                            <li><a href="https://app.lightningbounties.com/" className="hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-colors focus:outline-none focus:underline">Browse Bounties</a></li>
-                            <li><a href="#" className="hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-colors focus:outline-none focus:underline">Post a Task</a></li>
+                            <li><a href="https://app.lightningbounties.com/" className="hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-all duration-300 block hover:translate-x-2 focus:outline-none focus:underline">Browse Bounties</a></li>
+                            <li><a href="#" className="hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-all duration-300 block hover:translate-x-2 focus:outline-none focus:underline">Post a Task</a></li>
+                            <li><a href="https://discord.com/invite/zBxj4x4Cbq" className="hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-all duration-300 block hover:translate-x-2 focus:outline-none focus:underline">Support</a></li>
                         </ul>
                     </nav>
 
@@ -202,30 +203,40 @@ export const Footer: React.FC<FooterProps> = ({ darkMode, toggleTheme, onNavigat
                         <h3 className="font-bold text-slate-900 dark:text-white mb-6 text-sm uppercase tracking-wider font-display text-mv-purple-dark dark:text-mv-purple">Explore</h3>
                         <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
                             <li>
-                              <button onClick={() => onNavigate('home')} className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-colors text-left focus:outline-none focus:underline">
-                                Features
+                              <button onClick={() => onNavigate('about')} className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-all duration-300 text-left focus:outline-none focus:underline hover:translate-x-2 w-full">
+                                About
                               </button>
                             </li>
                             <li>
-                              <button onClick={() => onNavigate('how-it-works')} className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-colors text-left focus:outline-none focus:underline">
+                              <button onClick={() => onNavigate('how-it-works')} className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-all duration-300 text-left focus:outline-none focus:underline hover:translate-x-2 w-full">
                                 How it Works
                               </button>
                             </li>
-                            <li><a href="https://blog.lightningbounties.com/" className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-colors focus:outline-none focus:underline">Blog</a></li>
+                            <li>
+                              <button onClick={() => onNavigate('home')} className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-all duration-300 text-left focus:outline-none focus:underline hover:translate-x-2 w-full">
+                                Features
+                              </button>
+                            </li>
+                             <li>
+                              <button onClick={() => onNavigate('team')} className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-all duration-300 text-left focus:outline-none focus:underline hover:translate-x-2 w-full">
+                                Team
+                              </button>
+                            </li>
+                            <li>
+                              <button onClick={() => onNavigate('faq')} className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-all duration-300 text-left focus:outline-none focus:underline hover:translate-x-2 w-full">
+                                FAQ
+                              </button>
+                            </li>
                         </ul>
                     </nav>
 
                     <nav aria-label="Footer Resources Navigation">
                         <h3 className="font-bold text-slate-900 dark:text-white mb-6 text-sm uppercase tracking-wider font-display text-blue-600 dark:text-blue-400">Resources</h3>
                         <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                            <li><a href="https://docs.lightningbounties.com/docs" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:underline">Docs</a></li>
-                            <li><a href="https://issues.lightningbounties.com/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:underline">Issue Generator</a></li>
-                            <li><a href="https://issues.lightningbounties.com/templates" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:underline">Issue Templates</a></li>
-                            <li>
-                              <button onClick={() => onNavigate('faq')} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left focus:outline-none focus:underline">
-                                FAQ
-                              </button>
-                            </li>
+                            <li><a href="https://docs.lightningbounties.com/docs" className="hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 block hover:translate-x-2 focus:outline-none focus:underline">Docs</a></li>
+                            <li><a href="https://issues.lightningbounties.com/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 block hover:translate-x-2 focus:outline-none focus:underline">Issue Generator</a></li>
+                            <li><a href="https://issues.lightningbounties.com/templates" className="hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 block hover:translate-x-2 focus:outline-none focus:underline">Issue Templates</a></li>
+                            <li><a href="https://blog.lightningbounties.com/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 block hover:translate-x-2 focus:outline-none focus:underline">Blog</a></li>
                         </ul>
                     </nav>
                 </div>
