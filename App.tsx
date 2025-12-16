@@ -10,7 +10,7 @@ import { AboutPage } from './components/AboutPage';
 import { BountyAssistant } from './components/BountyAssistant';
 import { LeaderboardTable } from './components/LeaderboardTable';
 import { OpenBountiesTable } from './components/OpenBountiesTable';
-import { Zap, Shield, Globe, ArrowRight, Github, X, TrendingUp, Users, GitBranch, Database, CheckCircle, Linkedin, Youtube, Sun, Moon, Ban, HeartHandshake, CameraOff, Lock } from 'lucide-react';
+import { Zap, Shield, Globe, ArrowRight, Github, X, TrendingUp, Users, GitBranch, Database, CheckCircle, Linkedin, Youtube, Sun, Moon, Ban, HeartHandshake, CameraOff, Lock, PlayCircle } from 'lucide-react';
 import { fetchLightningData, fetchBtcPrice } from './services/dataService';
 import { Developer, UnclaimedIssue, Metric } from './types';
 
@@ -165,7 +165,7 @@ export const App: React.FC = () => {
                     <div className="absolute top-[20%] right-[-10%] w-[400px] h-[400px] bg-cyan-300 dark:bg-mv-cyan/20 rounded-full blur-[120px] opacity-60 dark:opacity-100 transition-all duration-700"></div>
                   </div>
                   
-                  <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                  <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
                     {/* Live BTC Price Badge */}
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-mv-card/80 border border-slate-200 dark:border-mv-border backdrop-blur-md mb-8 shadow-sm dark:shadow-[0_0_20px_rgba(0,240,255,0.1)] hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-colors hover:shadow-md hover:scale-105 duration-300">
                       <div className="flex items-center gap-2">
@@ -193,13 +193,30 @@ export const App: React.FC = () => {
                     Reward open-source developers instantly in Bitcoin for solving GitHub issues.
                     </p>
                     
-                    <div className="flex flex-col sm:flex-row justify-center gap-6">
-                      <button className="relative overflow-hidden group bg-transparent px-8 py-4 rounded-sm font-bold text-lg uppercase tracking-wider font-display text-white transition-all duration-300 shadow-xl dark:shadow-none hover:shadow-2xl hover:shadow-cyan-500/20 dark:hover:shadow-cyan-500/40 hover:-translate-y-1 active:translate-y-0">
-                        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-mv-cyan-dark to-mv-purple-dark dark:from-[#00f0ff] dark:to-[#bc13fe] opacity-90 group-hover:opacity-100 transition-opacity"></div>
-                        <span className="relative z-10 flex items-center gap-2">Start Earning <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" /></span>
+                    <div className="flex flex-col sm:flex-row justify-center gap-6 w-full sm:w-auto">
+                      {/* Browse Bounties (Primary) */}
+                      <button 
+                        onClick={() => {
+                            const element = document.getElementById('bounties');
+                            if (element) element.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="group relative px-10 py-5 rounded-xl font-bold text-lg uppercase tracking-wider font-display text-white overflow-hidden shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-300 hover:-translate-y-1 active:translate-y-0 active:shadow-md"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-600 dark:from-mv-cyan dark:to-mv-purple transition-all duration-500 group-hover:scale-110"></div>
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent transition-opacity duration-300"></div>
+                        <span className="relative z-10 flex items-center justify-center gap-3">
+                           Browse Bounties <ArrowRight size={22} className="group-hover:translate-x-1.5 transition-transform duration-300" strokeWidth={2.5} />
+                        </span>
                       </button>
-                      <button className="px-8 py-4 rounded-sm font-bold text-lg uppercase tracking-wider font-display text-slate-900 dark:text-white border border-slate-300 dark:border-mv-border hover:border-mv-cyan-dark dark:hover:border-mv-cyan hover:text-mv-cyan-dark dark:hover:text-mv-cyan transition-all duration-300 bg-white/50 dark:bg-mv-card/50 hover:bg-slate-50 dark:hover:bg-white/5 hover:-translate-y-1 active:translate-y-0 shadow-sm hover:shadow-lg">
-                        Post a Bounty
+
+                      {/* How It Works (Secondary) */}
+                      <button 
+                        onClick={() => navigateTo('how-it-works')}
+                        className="group relative px-10 py-5 rounded-xl font-bold text-lg uppercase tracking-wider font-display text-slate-800 dark:text-white border-2 border-slate-200 dark:border-white/10 hover:border-purple-500 dark:hover:border-mv-purple bg-white/50 dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-purple-500/20"
+                      >
+                         <span className="relative z-10 flex items-center justify-center gap-3">
+                           How It Works <PlayCircle size={22} className="group-hover:text-purple-600 dark:group-hover:text-mv-purple transition-colors duration-300" strokeWidth={2} />
+                        </span>
                       </button>
                     </div>
                   </div>
