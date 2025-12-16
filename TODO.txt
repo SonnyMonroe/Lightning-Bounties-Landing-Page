@@ -1,0 +1,29 @@
+# Lightning Bounties - Development Task List
+
+## 🎨 Design & Accessibility
+1. [ ] **Fix Color Contrast:** Audit and adjust text colors on FAQ, Privacy Policy, and Terms of Use pages to meet WCAG AA standards (especially cyan links on white backgrounds).
+2. [ ] **Enhance Button Hovers:** Add consistent micro-interactions (transform, shadow, glow) to all primary and secondary buttons.
+3. [x] **Team Section Header:** Redesign the header for the Team section to make it visually distinct and impactful.
+4. [ ] **Favicons:** Generate and implement a complete set of favicons (ico, png, svg) for all devices and browsers.
+5. [ ] **Header Logo:** Finalize the SVG/PNG logo implementation in the Header to ensure crisp rendering in both Dark and Light modes.
+
+## 📝 Content & Copy
+6. [ ] **Add Team Bios:** Replace placeholder text in `TeamPage.tsx` with actual biographies and links for all team members.
+7. [ ] **Edit "How It Works":** Refine the copy for clarity and brevity; ensure steps are logical for both Hunters and Posters.
+8. [ ] **Edit "Features":** Update feature descriptions to focus on benefits (e.g., "Instant Settlement" vs just "Lightning Network").
+9. [ ] **About Section:** Create or refine a dedicated "About Lightning Bounties" narrative (mission/vision) within the Home or a separate page.
+10. [ ] **MIT/License Section:** Add a section or clear footer link regarding the Open Source license (MIT) of the project itself.
+
+## 🛠 Functionality & Navigation
+11. [ ] **Fix Navigation Bar:** Ensure the mobile menu closes on click, sticky state works smoothly, and active states are correct.
+12. [ ] **Clickable Bounty Tables:** Make table rows in `OpenBountiesTable` clickable, redirecting users to the specific GitHub issue or App bounty page.
+13. [ ] **Link Verification:** Manually check every external link (socials, docs, app, blog) to ensure no 404s.
+14. [ ] **Embed Issue Creator:** Integrate the Issue Creator functionality more tightly (e.g., a "Quick Post" modal or direct deep link) rather than just a text link.
+
+## 🚀 Infrastructure & SEO
+15. [ ] **Map Domain:** Configure DNS settings to point `lightningbounties.com` to the hosting provider and ensure SSL certificates are active.
+16. [ ] **SEO & Meta Tags:** Verify Open Graph tags and Twitter cards are rendering correctly; add `robots.txt` and `sitemap.xml`.
+17. [ ] **Mobile Table Responsiveness:** QA the Leaderboard and Bounties tables on very small screens (iPhone SE size) to ensure horizontal scrolling works or layout adapts.
+18. [ ] **Image Optimization:** Convert team photos and assets to WebP format to reduce LCP (Largest Contentful Paint) time.
+19. [ ] **Error Handling:** Add user-friendly error boundaries or toast notifications if the API data fails to load (currently logs to console).
+20. [ ] **Structured Data:** Add JSON-LD Schema markup for "Organization" and "FAQPage" to improve Google search result appearance.
