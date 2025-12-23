@@ -6,7 +6,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 export const generateBountyDraft = async (userIdea: string): Promise<BountyDraft> => {
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3-flash-preview",
       contents: `You are an expert technical product manager. Transform this raw user idea into a professional, comprehensive GitHub Issue structure.
       
       Idea: "${userIdea}"

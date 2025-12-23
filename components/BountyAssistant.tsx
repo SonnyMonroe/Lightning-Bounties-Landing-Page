@@ -190,7 +190,7 @@ export const BountyAssistant: React.FC = () => {
             <div className="relative z-10 text-center mb-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-purple-900/20 text-purple-400 text-xs font-bold uppercase tracking-widest mb-6 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
                     <Sparkles size={14} />
-                    <span>Powered by Gemini 2.5</span>
+                    <span>Powered by Gemini 3</span>
                 </div>
                 <h3 className="text-4xl md:text-5xl font-bold text-white mb-4 font-display uppercase tracking-tight">Bounty Architect AI</h3>
                 <p className="text-slate-400 text-lg">Not sure how to structure your task? Describe it simply, and we'll draft it for you.</p>

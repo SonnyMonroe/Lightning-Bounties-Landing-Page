@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { FaqPage } from './components/FaqPage';
@@ -7,10 +8,11 @@ import { TeamPage } from './components/TeamPage';
 import { PrivacyPolicyPage } from './components/PrivacyPolicyPage';
 import { TermsOfServicePage } from './components/TermsOfServicePage';
 import { AboutPage } from './components/AboutPage';
+import { FeaturesPage } from './components/FeaturesPage';
 import { BountyAssistant } from './components/BountyAssistant';
 import { LeaderboardTable } from './components/LeaderboardTable';
 import { OpenBountiesTable } from './components/OpenBountiesTable';
-import { Zap, Shield, Globe, ArrowRight, Github, X, TrendingUp, Users, GitBranch, Database, CheckCircle, Linkedin, Youtube, Sun, Moon, Ban, HeartHandshake, CameraOff, Lock, PlayCircle, Maximize2, Minimize2, Loader2 } from 'lucide-react';
+import { Zap, Shield, Globe, ArrowRight, Github, X, TrendingUp, Users, GitBranch, Database, CheckCircle, Linkedin, Youtube, Sun, Moon, Ban, HeartHandshake, CameraOff, Lock, PlayCircle, Maximize2, Minimize2, Loader2, Cpu, Code, Sparkles } from 'lucide-react';
 import { fetchLightningData, fetchBtcPrice } from './services/dataService';
 import { Developer, UnclaimedIssue, Metric } from './types';
 
@@ -21,10 +23,8 @@ export const App: React.FC = () => {
   const [openBounties, setOpenBounties] = useState<UnclaimedIssue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Navigation State
-  const [currentView, setCurrentView] = useState<'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about' | 'features'>('home');
 
-  // Theme State
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -37,7 +37,6 @@ export const App: React.FC = () => {
     setDarkMode(!darkMode);
   };
 
-  // Apply theme class to document
   useEffect(() => {
     const root = window.document.documentElement;
     if (darkMode) {
@@ -49,55 +48,46 @@ export const App: React.FC = () => {
     }
   }, [darkMode]);
 
-  // Handle URL Hash changes
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.toLowerCase();
-      // Basic routing based on hash
       if (hash === '#faq') { setCurrentView('faq'); return; }
       if (hash === '#how-it-works') { setCurrentView('how-it-works'); return; }
       if (hash === '#team') { setCurrentView('team'); return; }
       if (hash === '#privacy') { setCurrentView('privacy'); return; }
       if (hash === '#terms') { setCurrentView('terms'); return; }
       if (hash === '#about') { setCurrentView('about'); return; }
+      if (hash === '#features') { setCurrentView('features'); return; }
       
-      // If hash is home-related or empty, go to home
-      if (!hash || hash === '#home' || hash === '#bounties' || hash === '#features' || hash === '#leaderboard') {
+      if (!hash || hash === '#home' || hash === '#bounties' || hash === '#leaderboard') {
          if (currentView !== 'home') setCurrentView('home');
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Check on mount
-
+    handleHashChange();
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [currentView]);
 
-  // Scroll to top when view changes (simulating page navigation)
   useEffect(() => {
     if (currentView !== 'home') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [currentView]);
 
-  // Handle View Navigation
-  const navigateTo = (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about') => {
+  const navigateTo = (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about' | 'features') => {
     if (view === 'home') {
         setCurrentView('home');
-        // Always clear hash when going home to ensure clean URL
         if (window.location.hash) {
             history.pushState("", document.title, window.location.pathname + window.location.search);
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-        // Set hash to trigger navigation
         window.location.hash = view;
-        // Scroll logic is handled by the effect or we can force it here for immediate feedback
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  // Helper to extract metric value safely
   const getMetricValue = (name: string): number => {
     const m = metrics.find(m => m.metric === name);
     return m ? m.value : 0;
@@ -158,136 +148,177 @@ export const App: React.FC = () => {
               return <TermsOfServicePage onBack={() => navigateTo('home')} />;
           case 'about':
               return <AboutPage onBack={() => navigateTo('home')} />;
+          case 'features':
+              return <FeaturesPage onBack={() => navigateTo('home')} />;
           case 'home':
           default:
               return (
                 <>
                 {/* Hero Section */}
-                <section className="relative pt-32 pb-12 lg:pt-48 lg:pb-24 overflow-hidden z-10">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
-                    <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-300 dark:bg-mv-purple/20 rounded-full blur-[120px] opacity-60 dark:opacity-100 transition-all duration-700"></div>
-                    <div className="absolute top-[20%] right-[-10%] w-[400px] h-[400px] bg-cyan-300 dark:bg-mv-cyan/20 rounded-full blur-[120px] opacity-60 dark:opacity-100 transition-all duration-700"></div>
-                  </div>
+                <section className="relative min-h-[90vh] flex items-center justify-center pt-20 overflow-hidden">
+                  <div className="absolute inset-0 z-0 cyber-grid opacity-30 pointer-events-none" />
                   
-                  <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
+                  {/* Background Glows */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-mv-cyan/10 rounded-full blur-[150px] pointer-events-none" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-mv-magenta/10 rounded-full blur-[120px] pointer-events-none" />
+                  
+                  <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+                    
+                    {/* Animated HUD / Logo Area */}
+                    <div className="relative w-64 h-64 md:w-80 md:h-80 mb-16 flex items-center justify-center">
+                        
+                        {/* Orbiting Rings */}
+                        <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                            className="absolute inset-0 rounded-full border border-mv-cyan/20 border-dashed"
+                        />
+                        <motion.div
+                            animate={{ rotate: -360 }}
+                            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                            className="absolute inset-4 md:inset-8 rounded-full border border-mv-magenta/20 border-dotted"
+                        />
+
+                        {/* Floating Icons on Orbit */}
+                        <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                            className="absolute inset-0"
+                        >
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white dark:bg-black p-1.5 rounded-full border border-mv-cyan/50 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                                <Cpu size={20} className="text-mv-cyan" />
+                            </div>
+                            <div className="absolute top-1/2 -right-4 -translate-y-1/2 bg-white dark:bg-black p-1.5 rounded-full border border-mv-magenta/50 shadow-[0_0_15px_rgba(217,70,239,0.4)]">
+                                <GitBranch size={20} className="text-mv-magenta" />
+                            </div>
+                            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white dark:bg-black p-1.5 rounded-full border border-mv-cyan/50 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                                <Database size={20} className="text-mv-cyan" />
+                            </div>
+                            <div className="absolute top-1/2 -left-4 -translate-y-1/2 bg-white dark:bg-black p-1.5 rounded-full border border-mv-magenta/50 shadow-[0_0_15px_rgba(217,70,239,0.4)]">
+                                <Zap size={20} className="text-mv-magenta" />
+                            </div>
+                        </motion.div>
+
+                        {/* Central Logo Container */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <motion.div 
+                                whileHover={{ scale: 1.05 }}
+                                className="w-44 h-44 md:w-56 md:h-56 flex items-center justify-center relative group"
+                            >
+                                {/* Glowing effect behind the logo */}
+                                <div className="absolute inset-0 bg-mv-cyan/20 blur-3xl rounded-full animate-pulse" />
+                                <div className="relative z-10 w-36 h-36 md:w-48 md:h-48 bg-white/5 dark:bg-black/40 border-2 border-slate-200/20 dark:border-white/10 rounded-3xl flex items-center justify-center backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-500 group-hover:border-mv-cyan/40">
+                                    <img 
+                                        src="images/logo3.png" 
+                                        alt="Lightning Bounties Hero" 
+                                        className="w-28 h-28 md:w-40 md:h-40 object-contain drop-shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+                                        onError={(e) => {
+                                            const target = e.target as HTMLElement;
+                                            target.style.display = 'none';
+                                            const backup = target.nextElementSibling as HTMLElement;
+                                            if(backup) backup.style.display = 'block';
+                                        }}
+                                    />
+                                    <div style={{display: 'none'}} className="absolute">
+                                        <Zap className="w-16 h-16 md:w-20 md:h-20 text-mv-cyan fill-current drop-shadow-[0_0_15px_rgba(6,182,212,1)]" />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </div>
+
                     {/* Live BTC Price Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-mv-card/80 border border-slate-200 dark:border-mv-border backdrop-blur-md mb-8 shadow-sm dark:shadow-[0_0_20px_rgba(0,240,255,0.1)] hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-colors hover:shadow-md hover:scale-105 duration-300">
-                      <div className="flex items-center gap-2">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                        <span className="text-slate-600 dark:text-slate-400 text-sm font-medium">BTC - USD:</span>
-                        <span className="text-slate-900 dark:text-white font-bold font-mono min-w-[80px] text-left">
-                          {btcPrice > 0 ? `$${btcPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : <Loader2 className="animate-spin text-slate-400 h-4 w-4 inline-block" />}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <h1 className="text-5xl md:text-8xl font-bold tracking-tight text-slate-900 dark:text-white mb-2 leading-[0.9] font-display uppercase drop-shadow-sm dark:drop-shadow-2xl">
-                      Lightning <br/>
-                      Bounties
-                    </h1>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md mb-10 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                    >
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                      </span>
+                      <span className="text-slate-500 dark:text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] font-display">LIVE BTC PRICE:</span>
+                      <span className="text-slate-900 dark:text-white font-bold font-mono tracking-tighter text-lg">
+                        {btcPrice > 0 ? `$${btcPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : <Loader2 className="animate-spin text-slate-400 dark:text-white/30 h-4 w-4" />}
+                      </span>
+                    </motion.div>
 
-                    <h2 className="text-2xl md:text-4xl font-bold mb-6 font-display uppercase tracking-wider">
-                       <span className="gradient-text">GitHub Bounties Paid in Bitcoin</span>
-                    </h2>
-                    
-                    <p className="mt-6 max-w-2xl mx-auto text-xl text-slate-600 dark:text-slate-400 mb-10 font-light leading-relaxed">
-                    Reward open-source developers instantly in Bitcoin for solving GitHub issues.
-                    </p>
-                    
-                    <div className="flex flex-col sm:flex-row justify-center gap-6 w-full sm:w-auto">
-                      {/* Browse Bounties (Primary) */}
-                      <button 
-                        onClick={() => {
-                            const element = document.getElementById('bounties');
-                            if (element) element.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="group relative px-10 py-5 rounded-xl font-bold text-lg uppercase tracking-wider font-display text-white overflow-hidden shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-300 hover:-translate-y-1 active:translate-y-0 active:shadow-md"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-600 dark:from-mv-cyan dark:to-mv-purple transition-all duration-500 group-hover:scale-110"></div>
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent transition-opacity duration-300"></div>
-                        <span className="relative z-10 flex items-center justify-center gap-3">
-                           Browse Bounties <ArrowRight size={22} className="group-hover:translate-x-1.5 transition-transform duration-300" strokeWidth={2.5} />
-                        </span>
-                      </button>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <h1 className="text-5xl md:text-8xl font-black tracking-tight text-slate-900 dark:text-white mb-4 font-display uppercase leading-[0.9] italic text-shadow-sm">
+                            LIGHTNING <br/>
+                            BOUNTIES
+                        </h1>
 
-                      {/* How It Works (Secondary) */}
-                      <button 
-                        onClick={() => navigateTo('how-it-works')}
-                        className="group relative px-10 py-5 rounded-xl font-bold text-lg uppercase tracking-wider font-display text-slate-800 dark:text-white border-2 border-slate-200 dark:border-white/10 hover:border-purple-500 dark:hover:border-mv-purple bg-white/50 dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-purple-500/20"
-                      >
-                         <span className="relative z-10 flex items-center justify-center gap-3">
-                           How It Works <PlayCircle size={22} className="group-hover:text-purple-600 dark:group-hover:text-mv-purple transition-colors duration-300" strokeWidth={2} />
-                        </span>
-                      </button>
-                    </div>
+                        <h2 className="text-xl md:text-3xl font-light mb-8 tracking-[0.3em] font-display uppercase italic">
+                           <span className="gradient-text">GITHUB BOUNTIES PAID IN BITCOIN</span>
+                        </h2>
+                        
+                        <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-white/60 mb-12 font-light leading-relaxed font-sans">
+                            Reward open-source developers instantly in <span className="text-slate-900 dark:text-white font-medium">Bitcoin</span> for solving GitHub issues.
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row justify-center gap-6 w-full sm:w-auto mb-20 lg:mb-32">
+                        <a 
+                            href="https://app.lightningbounties.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group relative px-10 py-5 font-bold text-sm uppercase tracking-widest font-display text-white overflow-hidden rounded-xl shadow-2xl transition-all duration-300 hover:-translate-y-1 active:translate-y-0 text-center"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-mv-cyan to-mv-magenta transition-all duration-500 group-hover:scale-110"></div>
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white transition-opacity duration-300"></div>
+                            <span className="relative z-10 flex items-center justify-center gap-3">
+                            EXPLORE BOUNTIES <ArrowRight size={22} className="group-hover:translate-x-1.5 transition-transform duration-300" strokeWidth={2.5} />
+                            </span>
+                        </a>
+
+                        <button 
+                            onClick={() => navigateTo('how-it-works')}
+                            className="group relative px-10 py-5 font-bold text-sm uppercase tracking-widest font-display text-slate-900 dark:text-white border border-slate-300 dark:border-white/20 hover:border-mv-magenta bg-white dark:bg-white/5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-mv-magenta/20 rounded-xl"
+                        >
+                            <span className="relative z-10 flex items-center justify-center gap-3">
+                            HOW IT WORKS <PlayCircle size={22} className="group-hover:text-mv-magenta transition-colors duration-300" strokeWidth={2} />
+                            </span>
+                        </button>
+                        </div>
+                    </motion.div>
                   </div>
                 </section>
 
                 {/* Live Metrics Grid */}
-                <section className="relative z-10 py-12 bg-slate-50/50 dark:bg-mv-card/30 border-y border-slate-200 dark:border-mv-border backdrop-blur-sm transition-colors duration-300">
+                <section className="relative z-10 py-20 bg-slate-50 dark:bg-white/5 border-y border-slate-200 dark:border-white/10 backdrop-blur-sm">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-                      <div className="flex flex-col items-center text-center p-4 group hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
-                        <div className="w-12 h-12 bg-cyan-100 dark:bg-mv-cyan/10 rounded-lg flex items-center justify-center mb-3 border border-cyan-200 dark:border-mv-cyan/20 group-hover:border-mv-cyan-dark dark:group-hover:border-mv-cyan/50 transition-colors group-hover:scale-110 duration-300">
-                          <Database className="text-mv-cyan-dark dark:text-mv-cyan" size={24} />
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12">
+                      {[
+                          { icon: Database, color: 'text-mv-cyan', label: 'Open Bounties', val: getMetricValue('Open Bounties') || getMetricValue('openBounties') },
+                          { icon: GitBranch, color: 'text-mv-magenta', label: 'Unique Repos', val: getMetricValue('Unique Repositories') || getMetricValue('uniqueRepos') },
+                          { icon: CheckCircle, color: 'text-blue-600 dark:text-blue-400', label: 'Total Bounties', val: getMetricValue('Total Bounties') || getMetricValue('totalBounties') },
+                          { icon: Users, color: 'text-emerald-600 dark:text-emerald-400', label: 'Total Developers', val: getMetricValue('Total Developers') || getMetricValue('totalDevelopers') },
+                          { icon: Zap, color: 'text-yellow-600 dark:text-yellow-400', label: 'Sats Rewarded', val: getMetricValue('Total Sats Rewarded').toLocaleString() }
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex flex-col items-center text-center group cursor-default">
+                            <div className={`w-12 h-12 bg-white dark:bg-white/5 rounded-lg flex items-center justify-center mb-4 border border-slate-200 dark:border-white/10 group-hover:border-mv-cyan/50 transition-all group-hover:scale-110 shadow-sm`}>
+                            <item.icon className={item.color} size={24} />
+                            </div>
+                            <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display min-h-[36px] flex items-center justify-center">
+                            {isLoading ? <Loader2 className="animate-spin text-slate-400 dark:text-white/20" size={24} /> : item.val}
+                            </div>
+                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-white/40 group-hover:text-mv-cyan transition-colors">{item.label}</div>
                         </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display min-h-[36px] flex items-center justify-center">
-                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : (getMetricValue('Open Bounties') || getMetricValue('openBounties'))}
-                        </div>
-                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors">Open Bounties</div>
-                      </div>
-
-                      <div className="flex flex-col items-center text-center p-4 group hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
-                        <div className="w-12 h-12 bg-purple-100 dark:bg-mv-purple/10 rounded-lg flex items-center justify-center mb-3 border border-purple-200 dark:border-mv-purple/20 group-hover:border-mv-purple-dark dark:group-hover:border-mv-purple/50 transition-colors group-hover:scale-110 duration-300">
-                          <GitBranch className="text-mv-purple-dark dark:text-mv-purple" size={24} />
-                        </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display min-h-[36px] flex items-center justify-center">
-                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : (getMetricValue('Unique Repositories') || getMetricValue('uniqueRepos'))}
-                        </div>
-                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-mv-purple-dark dark:group-hover:text-mv-purple transition-colors">Unique Repos</div>
-                      </div>
-
-                      <div className="flex flex-col items-center text-center p-4 group hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
-                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/10 rounded-lg flex items-center justify-center mb-3 border border-blue-200 dark:border-blue-500/20 group-hover:border-blue-400 dark:group-hover:border-blue-500/50 transition-colors group-hover:scale-110 duration-300">
-                          <CheckCircle className="text-blue-600 dark:text-blue-500" size={24} />
-                        </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display min-h-[36px] flex items-center justify-center">
-                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : (getMetricValue('Total Bounties') || getMetricValue('totalBounties'))}
-                        </div>
-                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-500 transition-colors">Total Bounties</div>
-                      </div>
-
-                      <div className="flex flex-col items-center text-center p-4 group hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
-                        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/10 rounded-lg flex items-center justify-center mb-3 border border-emerald-200 dark:border-emerald-500/20 group-hover:border-emerald-400 dark:group-hover:border-emerald-500/50 transition-colors group-hover:scale-110 duration-300">
-                          <Users className="text-emerald-600 dark:text-emerald-500" size={24} />
-                        </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display min-h-[36px] flex items-center justify-center">
-                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : (getMetricValue('Total Developers') || getMetricValue('totalDevelopers'))}
-                        </div>
-                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-500 transition-colors">Total Developers</div>
-                      </div>
-
-                      <div className="flex flex-col items-center text-center p-4 group col-span-2 md:col-span-1 lg:col-span-1 hover:bg-white/50 dark:hover:bg-white/5 rounded-xl transition-colors duration-300 cursor-default">
-                        <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-500/10 rounded-lg flex items-center justify-center mb-3 border border-yellow-200 dark:border-yellow-500/20 group-hover:border-yellow-400 dark:group-hover:border-yellow-500/50 transition-colors group-hover:scale-110 duration-300">
-                          <Zap className="text-yellow-600 dark:text-yellow-500" size={24} />
-                        </div>
-                        <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1 font-display font-mono min-h-[36px] flex items-center justify-center">
-                          {isLoading ? <Loader2 className="animate-spin text-slate-400" size={24} /> : getMetricValue('Total Sats Rewarded').toLocaleString()}
-                        </div>
-                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-yellow-600 dark:group-hover:text-yellow-500 transition-colors">Sats Rewarded</div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </section>
 
-                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-20">
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-32">
                   <section id="leaderboard" className="scroll-mt-24">
                      {isLoading ? (
-                       <div className="w-full h-96 flex items-center justify-center bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border rounded-xl">
-                          <Loader2 className="animate-spin text-cyan-500" size={48} />
+                       <div className="w-full h-96 flex items-center justify-center bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+                          <Loader2 className="animate-spin text-mv-cyan" size={48} />
                        </div>
                      ) : (
                        <LeaderboardTable developers={developers} btcPrice={btcPrice} />
@@ -296,131 +327,93 @@ export const App: React.FC = () => {
 
                   <section id="bounties" className="scroll-mt-24">
                      {isLoading ? (
-                        <div className="w-full h-96 flex items-center justify-center bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border rounded-xl">
+                        <div className="w-full h-96 flex items-center justify-center bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
                            <Loader2 className="animate-spin text-orange-500" size={48} />
                         </div>
                      ) : (
                        <OpenBountiesTable bounties={openBounties} btcPrice={btcPrice} />
                      )}
                   </section>
+
+                  {/* Homepage Features Section */}
+                  <section id="homepage-features" className="scroll-mt-24 py-12">
+                     <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 font-display uppercase tracking-tight italic leading-[1.1]">
+                            WHY DEVELOPERS & <br className="hidden md:block" /> 
+                            ORGANIZATIONS CHOOSE <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-magenta">LIGHTNING BOUNTIES</span>
+                        </h2>
+                        <p className="text-sm md:text-lg text-slate-500 dark:text-white/60 font-bold uppercase tracking-[0.3em]">
+                            ZERO FRICTION. GLOBAL ACCESS. INSTANT REWARDS.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[
+                            { icon: Ban, title: "No Setup Required", desc: "No plugins, no installations, no GitHub changes. Post a bounty in 5 clicks or claim one instantly. Just copy-paste a GitHub Issue URL and go." },
+                            { icon: Zap, title: "Lightning-Fast Payments", desc: "Bitcoin payouts via Lightning Network arrive in seconds, not days. No invoices, no wire transfers, no waiting—just instant global payments." },
+                            { icon: Globe, title: "Global Access", desc: "Bypass Stripe, PayPal, and region-locked payment processors. Bitcoin operates globally—anyone, anywhere can participate and earn." },
+                            { icon: HeartHandshake, title: "Crowdfunding", desc: "Multiple contributors can fund a single bounty. Support issues on VSCode, Django, React—even if you're not the project owner." },
+                            { icon: CameraOff, title: "Anonymous Bounty Posting", desc: "Contribute to bounties without revealing your identity. Perfect for those who value privacy." },
+                            { icon: Lock, title: "Escrow Protection", desc: "Bounties are locked in escrow for a set time (e.g., 2 weeks). Developers know the reward is secured before they start working." }
+                        ].map((f, i) => (
+                            <div key={i} className="bg-white dark:bg-[#0a0a0f] border border-slate-200 dark:border-white/10 p-8 rounded-2xl transition-all duration-500 group shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_20px_40px_rgba(6,182,212,0.1)] dark:hover:shadow-[0_20px_40px_rgba(6,182,212,0.05)] hover:border-mv-cyan hover:-translate-y-2 hover:scale-[1.02]">
+                                <div className="w-16 h-16 bg-slate-50 dark:bg-white/5 rounded-2xl flex items-center justify-center mb-6 border border-slate-200 dark:border-white/10 group-hover:border-mv-cyan/50 group-hover:bg-mv-cyan/5 transition-all duration-300">
+                                    <f.icon className="text-slate-600 dark:text-slate-400 group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan transition-colors duration-300">
+                                    {f.title}
+                                </h3>
+                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium">
+                                    {f.desc}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                  </section>
                 </div>
 
-                <section id="features" className="relative z-10 py-24 bg-slate-50 dark:bg-mv-card/50 relative overflow-hidden border-t border-slate-200 dark:border-mv-border transition-colors duration-300">
-                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="text-center max-w-3xl mx-auto mb-16">
-                      <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide leading-tight">
-                        Why Developers & Organizations Choose <br/>
-                        <span className="text-mv-cyan-dark dark:text-mv-cyan">Lightning Bounties</span>
-                      </h2>
-                      <p className="text-slate-600 dark:text-slate-400 text-lg font-bold uppercase tracking-wider">Zero friction. Global access. Instant rewards.</p>
-                    </div>
+                {/* Promotional Section - Lightning Issues - REDESIGNED TO MATCH ARCHITECT AI */}
+                <div className="relative z-10 max-w-4xl mx-auto my-16 bg-white dark:bg-[#020305] border border-slate-200 dark:border-slate-800 rounded-3xl p-1 shadow-2xl transition-all duration-300 hover:ring-1 hover:ring-cyan-500/30 group/LI">
+                    <div className="p-8 md:p-12 relative overflow-hidden bg-white dark:bg-[#020305] rounded-[22px]">
+                        {/* Decorative background elements matching Architect style */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover/LI:scale-125 transition-transform duration-700"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none group-hover/LI:scale-125 transition-transform duration-700"></div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {/* Card 1 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
-                          <Ban className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">No Setup Required</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
-                          No plugins, no installations, no GitHub changes. Post a bounty in 5 clicks or claim one instantly. Just copy-paste a GitHub Issue URL and go.
-                        </p>
-                      </div>
-                      
-                      {/* Card 2 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
-                          <Zap className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Lightning-Fast Payments</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
-                          Bitcoin payouts via Lightning Network arrive in seconds, not days. No invoices, no wire transfers, no waiting—just instant global payments.
-                        </p>
-                      </div>
-                      
-                      {/* Card 3 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
-                         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
-                          <Globe className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Global Access</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
-                          Bypass Stripe, PayPal, and region-locked payment processors. Bitcoin operates globally—anyone, anywhere can participate and earn.
-                        </p>
-                      </div>
-
-                      {/* Card 4 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
-                          <HeartHandshake className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Crowdfunding</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
-                          Multiple contributors can fund a single bounty. Support issues on VSCode, Django, React—even if you're not the project owner.
-                        </p>
-                      </div>
-
-                      {/* Card 5 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
-                          <CameraOff className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Anonymous Bounty Posting</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
-                          Contribute to bounties without revealing your identity. Perfect for those who value privacy.
-                        </p>
-                      </div>
-
-                      {/* Card 6 */}
-                      <div className="bg-white dark:bg-mv-card border border-slate-200 dark:border-mv-border p-8 rounded-xl hover:border-mv-cyan-dark dark:hover:border-mv-cyan/50 transition-all duration-300 group shadow-xl dark:shadow-lg dark:shadow-black/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-cyan-900/20 flex flex-col h-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        <div className="bg-slate-100 dark:bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-slate-200 dark:border-white/5 group-hover:border-mv-cyan-dark/30 dark:group-hover:border-mv-cyan/30 relative z-10">
-                          <Lock className="text-slate-500 dark:text-slate-400 group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors" size={32} strokeWidth={1.5} />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-wide group-hover:text-mv-cyan-dark dark:group-hover:text-mv-cyan transition-colors relative z-10">Escrow Protection</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed flex-grow relative z-10">
-                          Bounties are locked in escrow for a set time (e.g., 2 weeks). Developers know the reward is secured before they start working.
-                        </p>
-                      </div>
-
-                    </div>
-                  </div>
-                </section>
-
-                <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-white dark:bg-mv-dark border-t border-slate-200 dark:border-mv-border transition-colors duration-300">
-                  {/* New Lightning Issues Promo */}
-                  <div className="w-full max-w-4xl mx-auto mb-12 bg-white dark:bg-[#020305] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden group">
-                        {/* Decorative gradients */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
-                        
-                        <div className="relative z-10 text-center">
-                            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 font-display uppercase tracking-wide">
-                                Introducing <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Lightning Issues</span>
+                        <div className="relative z-10 text-center mb-10">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-cyan-900/10 dark:bg-cyan-900/20 text-cyan-600 dark:text-cyan-400 text-xs font-bold uppercase tracking-widest mb-6 border border-cyan-500/20 dark:border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
+                                <Sparkles size={14} />
+                                <span>Automation Tool</span>
+                            </div>
+                            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-tight leading-none italic">
+                                INTRODUCING <br/>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-purple group-hover/LI:brightness-125 transition-all">LIGHTNING ISSUES</span>
                             </h2>
-                            <p className="text-slate-600 dark:text-slate-400 text-lg md:text-xl font-medium max-w-3xl mx-auto mb-8 leading-relaxed">
-                                Lightning Issues scans GitHub Repo's and automatically creates GitHub Issue based on current repository issues, feature suggestions and code quality improvements.
+                            <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed font-sans font-medium">
+                                Lightning Issues scans GitHub repositories and automatically creates professional GitHub Issues based on current codebase analysis, feature suggestions, and quality gaps.
                             </p>
+                        </div>
+
+                        <div className="relative z-10 max-w-2xl mx-auto text-center">
                             <a 
                                 href="https://issues.lightningbounties.com" 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 font-bold text-white uppercase tracking-widest font-display bg-slate-900 dark:bg-black overflow-hidden rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,240,255,0.3)] ring-1 ring-slate-700 dark:ring-slate-800 hover:ring-cyan-500 dark:hover:ring-cyan-400"
+                                className="inline-flex group/btn relative px-10 py-5 font-bold text-sm uppercase tracking-widest font-display text-white overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:-translate-y-1 active:translate-y-0 items-center justify-center gap-3"
                             >
-                                <span className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                                <span className="relative z-10 flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
-                                    Try Lightning Issues <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-mv-cyan to-mv-purple transition-all duration-500 group-hover/btn:scale-110"></div>
+                                <div className="absolute inset-0 opacity-0 group-hover/btn:opacity-20 bg-white transition-opacity duration-300"></div>
+                                <span className="relative z-10 flex items-center gap-3">
+                                    TRY LIGHTNING ISSUES 
+                                    <ArrowRight size={22} className="group-hover/btn:translate-x-1.5 transition-transform duration-300" strokeWidth={2.5} />
                                 </span>
                             </a>
                         </div>
                     </div>
+                </div>
 
-                  <BountyAssistant />
+                <section className="relative z-10 px-4 sm:px-6 lg:px-8 pb-32">
+                    <BountyAssistant />
                 </section>
                 </>
               );
@@ -428,15 +421,9 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-mv-dark text-slate-900 dark:text-white font-sans transition-colors duration-300 selection:bg-cyan-200 dark:selection:bg-mv-purple selection:text-cyan-900 dark:selection:text-white flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white font-sans transition-colors duration-300 flex flex-col">
       <Header darkMode={darkMode} toggleTheme={toggleTheme} onNavigate={navigateTo} />
       
-      {/* Background Grid Pattern - Adjusted for Light Mode */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-transparent dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-mv-dark/80 dark:to-mv-dark"></div>
-      </div>
-
       <main className="flex-grow">
         {renderContent()}
       </main>

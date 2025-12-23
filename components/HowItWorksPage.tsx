@@ -5,6 +5,44 @@ interface HowItWorksPageProps {
   onBack: () => void;
 }
 
+// Helper Component for Steps - Defined before usage to avoid hoisting issues with arrow functions
+const StepCard: React.FC<{ 
+    number: string; 
+    title: string; 
+    children: React.ReactNode; 
+    color: 'cyan' | 'purple'; 
+    icon: React.ReactNode; 
+}> = ({ number, title, children, color, icon }) => {
+    const isCyan = color === 'cyan';
+    const borderColor = isCyan ? 'border-cyan-200 dark:border-cyan-800' : 'border-purple-200 dark:border-purple-800';
+    const hoverBorderColor = isCyan ? 'group-hover:border-cyan-500 dark:group-hover:border-cyan-400' : 'group-hover:border-purple-500 dark:group-hover:border-purple-400';
+    const numBg = isCyan ? 'bg-cyan-700 dark:bg-cyan-500' : 'bg-purple-700 dark:bg-purple-500';
+    const iconColor = isCyan ? 'text-cyan-800 dark:text-cyan-400' : 'text-purple-800 dark:text-purple-400';
+    const shadow = isCyan ? 'hover:shadow-cyan-500/20' : 'hover:shadow-purple-500/20';
+
+    return (
+        <div className={`group bg-white dark:bg-[#111] border ${borderColor} ${hoverBorderColor} p-6 rounded-xl shadow-md ${shadow} transition-all duration-300 hover:-translate-y-1 relative overflow-hidden`}>
+            <div className="flex items-start gap-5 relative z-10">
+                <div className={`flex-shrink-0 w-10 h-10 rounded-full ${numBg} text-white flex items-center justify-center font-bold font-display text-lg shadow-lg`}>
+                    {number}
+                </div>
+                <div>
+                    <h4 className={`text-xl font-bold text-black dark:text-white uppercase mb-2 flex items-center gap-2 group-hover:${iconColor} transition-colors`}>
+                        {title}
+                    </h4>
+                    <div className="text-black dark:text-white text-base leading-relaxed font-medium opacity-90">
+                        {children}
+                    </div>
+                </div>
+            </div>
+            {/* Subtle background icon */}
+            <div className={`absolute -bottom-6 -right-6 opacity-5 group-hover:opacity-10 transition-opacity ${iconColor}`}>
+               {React.cloneElement(icon as React.ReactElement<any>, { size: 120 })}
+            </div>
+        </div>
+    );
+};
+
 export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack }) => {
   return (
     <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-black text-black dark:text-white transition-colors duration-300 relative z-20">
@@ -139,35 +177,3 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack }) => {
     </div>
   );
 };
-
-// Helper Component for Steps
-const StepCard = ({ number, title, children, color, icon }: { number: string, title: string, children: React.ReactNode, color: 'cyan' | 'purple', icon: React.ReactNode }) => {
-    const isCyan = color === 'cyan';
-    const borderColor = isCyan ? 'border-cyan-200 dark:border-cyan-800' : 'border-purple-200 dark:border-purple-800';
-    const hoverBorderColor = isCyan ? 'group-hover:border-cyan-500 dark:group-hover:border-cyan-400' : 'group-hover:border-purple-500 dark:group-hover:border-purple-400';
-    const numBg = isCyan ? 'bg-cyan-700 dark:bg-cyan-500' : 'bg-purple-700 dark:bg-purple-500';
-    const iconColor = isCyan ? 'text-cyan-800 dark:text-cyan-400' : 'text-purple-800 dark:text-purple-400';
-    const shadow = isCyan ? 'hover:shadow-cyan-500/20' : 'hover:shadow-purple-500/20';
-
-    return (
-        <div className={`group bg-white dark:bg-[#111] border ${borderColor} ${hoverBorderColor} p-6 rounded-xl shadow-md ${shadow} transition-all duration-300 hover:-translate-y-1 relative overflow-hidden`}>
-            <div className="flex items-start gap-5 relative z-10">
-                <div className={`flex-shrink-0 w-10 h-10 rounded-full ${numBg} text-white flex items-center justify-center font-bold font-display text-lg shadow-lg`}>
-                    {number}
-                </div>
-                <div>
-                    <h4 className={`text-xl font-bold text-black dark:text-white uppercase mb-2 flex items-center gap-2 group-hover:${iconColor} transition-colors`}>
-                        {title}
-                    </h4>
-                    <div className="text-black dark:text-white text-base leading-relaxed font-medium opacity-90">
-                        {children}
-                    </div>
-                </div>
-            </div>
-            {/* Subtle background icon */}
-            <div className={`absolute -bottom-6 -right-6 opacity-5 group-hover:opacity-10 transition-opacity ${iconColor}`}>
-               {React.cloneElement(icon as React.ReactElement<any>, { size: 120 })}
-            </div>
-        </div>
-    );
-}

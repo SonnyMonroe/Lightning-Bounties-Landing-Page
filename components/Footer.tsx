@@ -131,7 +131,7 @@ const NewsletterForm = () => {
 interface FooterProps {
   darkMode: boolean;
   toggleTheme: () => void;
-  onNavigate: (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about') => void;
+  onNavigate: (view: 'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about' | 'features') => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ darkMode, toggleTheme, onNavigate }) => {
@@ -213,7 +213,7 @@ export const Footer: React.FC<FooterProps> = ({ darkMode, toggleTheme, onNavigat
                               </button>
                             </li>
                             <li>
-                              <button onClick={() => onNavigate('home')} className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-all duration-300 text-left focus:outline-none focus:underline hover:translate-x-2 w-full">
+                              <button onClick={() => onNavigate('features')} className="hover:text-mv-purple-dark dark:hover:text-mv-purple transition-all duration-300 text-left focus:outline-none focus:underline hover:translate-x-2 w-full">
                                 Features
                               </button>
                             </li>
