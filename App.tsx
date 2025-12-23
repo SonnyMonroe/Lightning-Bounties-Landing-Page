@@ -207,11 +207,11 @@ export const App: React.FC = () => {
                             >
                                 {/* Glowing effect behind the logo */}
                                 <div className="absolute inset-0 bg-mv-cyan/20 blur-3xl rounded-full animate-pulse" />
-                                <div className="relative z-10 w-36 h-36 md:w-48 md:h-48 bg-white/5 dark:bg-black/40 border-2 border-slate-200/20 dark:border-white/10 rounded-3xl flex items-center justify-center backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-500 group-hover:border-mv-cyan/40">
+                                <div className="relative z-10 w-36 h-36 md:w-48 md:h-48 bg-black border-2 border-slate-200/20 dark:border-white/10 rounded-full flex items-center justify-center backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-500 group-hover:border-mv-cyan/40">
                                     <img 
-                                        src="images/logo6.png" 
+                                        src="images/logo3.png" 
                                         alt="Lightning Bounties Hero" 
-                                        className="w-28 h-28 md:w-40 md:h-40 object-contain drop-shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+                                        className="w-32 h-32 md:w-44 md:h-44 object-contain drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-transform duration-500 group-hover:scale-110"
                                         onError={(e) => {
                                             const target = e.target as HTMLElement;
                                             target.style.display = 'none';
