@@ -199,7 +199,7 @@ export const App: React.FC = () => {
                             </div>
                         </motion.div>
 
-                        {/* Central Logo Container */}
+                        {/* Central Logo Container - Redesigned to be perfectly circular and zoomed */}
                         <div className="absolute inset-0 flex items-center justify-center">
                             <motion.div 
                                 whileHover={{ scale: 1.05 }}
@@ -211,7 +211,7 @@ export const App: React.FC = () => {
                                     <img 
                                         src="images/logo3.png" 
                                         alt="Lightning Bounties Hero" 
-                                        className="w-32 h-32 md:w-44 md:h-44 object-contain drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-transform duration-500 group-hover:scale-110"
+                                        className="w-full h-full object-cover scale-[1.25] drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-transform duration-500 group-hover:scale-[1.4]"
                                         onError={(e) => {
                                             const target = e.target as HTMLElement;
                                             target.style.display = 'none';
@@ -250,12 +250,12 @@ export const App: React.FC = () => {
                         transition={{ duration: 0.8 }}
                     >
                         <h1 className="text-5xl md:text-8xl font-black tracking-tight text-slate-900 dark:text-white mb-4 font-display uppercase leading-[0.9] italic text-shadow-sm">
-                            LIGHTNING <br/>
-                            BOUNTIES
+                            <span className="inline-block pr-2">LIGHTNING</span> <br/>
+                            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-purple pr-8 -mr-8">BOUNTIES</span>
                         </h1>
 
                         <h2 className="text-xl md:text-3xl font-light mb-8 tracking-[0.3em] font-display uppercase italic">
-                           <span className="gradient-text">GITHUB BOUNTIES PAID IN BITCOIN</span>
+                           <span className="gradient-text inline-block pr-8 -mr-8">GITHUB BOUNTIES PAID IN BITCOIN</span>
                         </h2>
                         
                         <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-white/60 mb-12 font-light leading-relaxed font-sans">
@@ -341,7 +341,7 @@ export const App: React.FC = () => {
                         <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 font-display uppercase tracking-tight italic leading-[1.1]">
                             WHY DEVELOPERS & <br className="hidden md:block" /> 
                             ORGANIZATIONS CHOOSE <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-magenta">LIGHTNING BOUNTIES</span>
+                            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-magenta pr-8 -mr-8">LIGHTNING BOUNTIES</span>
                         </h2>
                         <p className="text-sm md:text-lg text-slate-500 dark:text-white/60 font-bold uppercase tracking-[0.3em]">
                             ZERO FRICTION. GLOBAL ACCESS. INSTANT REWARDS.
@@ -386,8 +386,8 @@ export const App: React.FC = () => {
                                 <span>Automation Tool</span>
                             </div>
                             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-tight leading-none italic">
-                                INTRODUCING <br/>
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-purple group-hover/LI:brightness-125 transition-all">LIGHTNING ISSUES</span>
+                                <span className="inline-block pr-2">INTRODUCING</span> <br/>
+                                <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-purple group-hover/LI:brightness-125 transition-all pr-8 -mr-8">LIGHTNING ISSUES</span>
                             </h2>
                             <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed font-sans font-medium">
                                 Lightning Issues scans GitHub repositories and automatically creates professional GitHub Issues based on current codebase analysis, feature suggestions, and quality gaps.
