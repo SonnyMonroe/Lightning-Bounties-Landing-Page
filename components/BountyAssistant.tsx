@@ -31,7 +31,7 @@ const SimpleMarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
         }
 
         // Code Blocks (Basic detection)
-        if (line.trim().startsWith('```')) return null; // Skip fence lines in this simple parser
+        if (line.trim().startsWith('```')) return null; 
 
         // Empty lines
         if (!line.trim()) return <div key={i} className="h-2"></div>;
@@ -51,7 +51,7 @@ const formatInline = (text: string) => {
       return <strong key={index} className="font-bold text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
     }
     if (part.startsWith('`') && part.endsWith('`')) {
-      return <code key={index} className="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded text-sm font-mono border border-slate-200 dark:border-slate-700">{part.slice(1, -1)}</code>;
+      return <code key={index} className="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 px-1.5 py-0.5 rounded text-sm font-mono border border-slate-200 dark:border-slate-700">{part.slice(1, -1)}</code>;
     }
     return part;
   });
@@ -72,7 +72,6 @@ export const BountyAssistant: React.FC = () => {
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Helper to add to history
   const addToHistory = (newDraft: BountyDraft) => {
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(newDraft);
@@ -89,10 +88,9 @@ export const BountyAssistant: React.FC = () => {
     try {
       const result = await generateBountyDraft(input);
       setDraft(result);
-      // Reset history with new draft
       setHistory([result]);
       setHistoryIndex(0);
-      setViewMode('preview'); // Default to preview on new generate
+      setViewMode('preview'); 
     } catch (err) {
       setError('Failed to generate bounty. Please try again.');
     } finally {
@@ -104,8 +102,6 @@ export const BountyAssistant: React.FC = () => {
     if (!draft) return;
     setLoading(true);
     try {
-      // Re-use original input or prompt derived from current title?
-      // Using original input is safer for "Regenerate" context
       const result = await generateBountyDraft(input || draft.title); 
       addToHistory(result);
       setViewMode('preview');
@@ -133,7 +129,6 @@ export const BountyAssistant: React.FC = () => {
   const updateDraftContent = (field: keyof BountyDraft, value: string) => {
     if (!draft) return;
     const newDraft = { ...draft, [field]: value };
-    // Only add to history if distinct (debounce could be added here for typing)
     if (JSON.stringify(newDraft) !== JSON.stringify(draft)) {
         addToHistory(newDraft);
     } else {
@@ -141,7 +136,6 @@ export const BountyAssistant: React.FC = () => {
     }
   };
 
-  // Text manipulation helpers
   const insertText = (prefix: string, suffix: string = '') => {
     if (!textareaRef.current || !draft) return;
     
@@ -157,7 +151,6 @@ export const BountyAssistant: React.FC = () => {
     
     updateDraftContent('description', newText);
     
-    // Restore focus and selection (roughly)
     setTimeout(() => {
         if (textareaRef.current) {
             textareaRef.current.focus();
@@ -174,57 +167,55 @@ export const BountyAssistant: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Simple Emoji List
   const emojis = ['⚡', '₿', '🐛', '🚀', '✅', '❌', '🔧', '📦', '📝', '🔒'];
 
   return (
-    <div className={`w-full max-w-4xl mx-auto my-8 bg-white dark:bg-[#020305] border border-slate-200 dark:border-slate-800 rounded-3xl p-1 shadow-2xl relative transition-all duration-300 ${draft ? 'ring-1 ring-purple-500/20' : ''}`}>
+    <div className={`w-full max-w-4xl mx-auto my-8 bg-white dark:bg-[#020305] border border-slate-200 dark:border-slate-800 rounded-3xl p-1 shadow-2xl relative transition-all duration-300 ${draft ? 'ring-1 ring-mv-purple/20' : ''}`}>
       
       {!draft ? (
-        // Input View
-        <div className="p-8 md:p-12 relative overflow-hidden bg-[#020305] rounded-[22px]">
-             {/* Decorative background elements */}
-             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-             <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+        <div className="p-8 md:p-12 relative overflow-hidden bg-slate-50 dark:bg-[#020305] rounded-[22px]">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-mv-purple/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+             <div className="absolute bottom-0 left-0 w-64 h-64 bg-mv-cyan/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
 
             <div className="relative z-10 text-center mb-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-purple-900/20 text-purple-400 text-xs font-bold uppercase tracking-widest mb-6 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
-                    <Sparkles size={14} />
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-mv-purple/20 text-mv-purple-dark dark:text-mv-purple text-xs font-bold uppercase tracking-widest mb-6 border border-mv-purple/30 shadow-sm">
+                    <Sparkles size={14} aria-hidden="true" />
                     <span>Powered by Gemini 3</span>
                 </div>
-                <h3 className="text-4xl md:text-5xl font-bold text-white mb-4 font-display uppercase tracking-tight">Bounty Architect AI</h3>
-                <p className="text-slate-400 text-lg">Not sure how to structure your task? Describe it simply, and we'll draft it for you.</p>
+                <h3 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-tight">Bounty Architect AI</h3>
+                <p className="text-slate-700 dark:text-slate-400 text-lg">Not sure how to structure your task? Describe it simply, and we'll draft it for you.</p>
             </div>
 
             <div className="relative z-10 max-w-2xl mx-auto">
                 <div className="flex flex-col gap-4">
                 <div className="relative group">
+                    <label htmlFor="bounty-idea-input" className="sr-only">Describe your bounty idea</label>
                     <input 
+                        id="bounty-idea-input"
                         type="text" 
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
                         placeholder="e.g., I need a Python script to scrape Bitcoin price every hour..."
-                        className="w-full bg-[#0a0a0f] border border-slate-700 text-white rounded-xl px-6 py-5 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-slate-600 transition-all shadow-inner text-lg"
-                        aria-label="Describe your bounty idea"
+                        className="w-full bg-white dark:bg-[#0a0a0f] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-6 py-5 focus:outline-none focus:border-mv-purple focus:ring-2 focus:ring-mv-purple/30 placeholder-slate-400 dark:placeholder-slate-600 transition-all shadow-inner text-lg"
                     />
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none -z-10 blur-xl"></div>
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-mv-cyan/20 to-mv-purple/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none -z-10 blur-xl"></div>
                 </div>
                 
                 <button 
                     onClick={handleGenerate}
                     disabled={loading || !input.trim()}
-                    className="w-full md:w-auto md:self-end bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold uppercase tracking-wider transition-all shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 font-display"
+                    className="w-full md:w-auto md:self-end bg-gradient-to-r from-mv-cyan-dark to-mv-purple-dark dark:from-mv-cyan-dark dark:to-mv-purple-dark hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold uppercase tracking-wider transition-all shadow-lg shadow-mv-purple/20 hover:shadow-mv-purple/40 hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 font-display focus:ring-4 focus:ring-mv-purple/50 focus:outline-none"
+                    aria-busy={loading}
                 >
-                    {loading ? <Loader2 className="animate-spin" /> : <>Draft <ArrowRight size={18} /></>}
+                    {loading ? <Loader2 className="animate-spin" /> : <>Draft Bounty <ArrowRight size={18} /></>}
                 </button>
                 </div>
                 
-                {error && <p className="text-red-400 text-sm mt-4 text-center bg-red-900/20 py-2 rounded border border-red-900/50">{error}</p>}
+                {error && <p className="text-red-600 dark:text-red-400 text-sm mt-4 text-center bg-red-50 dark:bg-red-900/20 py-2 rounded border border-red-200 dark:border-red-900/50" role="alert">{error}</p>}
             </div>
         </div>
       ) : (
-        // Draft View (In-place)
         <BountyEditor 
             draft={draft}
             viewMode={viewMode}
@@ -251,7 +242,6 @@ export const BountyAssistant: React.FC = () => {
 };
 
 
-// Extracted Sub-component for the Editor UI
 interface BountyEditorProps {
     draft: BountyDraft;
     viewMode: 'edit' | 'preview';
@@ -280,23 +270,22 @@ const BountyEditor: React.FC<BountyEditorProps> = ({
     copyToClipboard, copied, onDiscard
 }) => {
     return (
-        <div className="flex flex-col bg-white dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-300 rounded-3xl overflow-hidden min-h-[600px]">
+        <div className="flex flex-col bg-white dark:bg-[#0a0a0f] text-slate-900 dark:text-slate-300 rounded-3xl overflow-hidden min-h-[600px]" role="region" aria-label="Bounty Draft Editor">
             {/* Toolbar Header */}
             <div className="flex flex-col border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#050508]">
-                {/* Top Row: Title & Main Actions */}
                 <div className="flex items-center justify-between p-4 md:p-6 pb-2">
                     <div className="flex items-center gap-3">
-                        <CheckCircle2 className="text-cyan-600 dark:text-cyan-400" size={24} /> 
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest font-display">Draft Preview</span>
+                        <CheckCircle2 className="text-cyan-700 dark:text-cyan-400" size={24} aria-hidden="true" /> 
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest font-display">Draft Generated</span>
                     </div>
                     <div className="flex items-center gap-2">
                          <button 
                             onClick={handleRegenerate}
                             disabled={loading}
-                            className="p-2 text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-200 dark:hover:bg-white/5 rounded-lg transition-colors flex items-center gap-2"
-                            title="Regenerate with AI"
+                            className="p-2 text-slate-600 dark:text-slate-400 hover:text-cyan-800 dark:hover:text-cyan-400 hover:bg-slate-200 dark:hover:bg-white/5 rounded-lg transition-colors flex items-center gap-2 focus:ring-2 focus:ring-mv-cyan focus:outline-none"
+                            aria-label="Regenerate draft with AI"
                         >
-                            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} aria-hidden="true" />
                             <span className="text-xs font-bold uppercase hidden sm:inline">Regenerate</span>
                         </button>
                     </div>
@@ -304,49 +293,63 @@ const BountyEditor: React.FC<BountyEditorProps> = ({
 
                 {/* Title Editor Input */}
                 <div className="px-6 pb-4">
+                     <label htmlFor="draft-title-input" className="sr-only">Bounty Title</label>
                      <input 
+                        id="draft-title-input"
                         type="text" 
                         value={draft.title}
                         onChange={(e) => updateDraftContent('title', e.target.value)}
-                        className="w-full bg-transparent text-2xl md:text-3xl font-bold text-slate-900 dark:text-white focus:outline-none placeholder-slate-400 dark:placeholder-slate-600 font-display uppercase tracking-wide border-b border-transparent focus:border-slate-300 dark:focus:border-slate-700 transition-colors py-2"
+                        className="w-full bg-transparent text-2xl md:text-3xl font-bold text-slate-900 dark:text-white focus:outline-none placeholder-slate-400 dark:placeholder-slate-600 font-display uppercase tracking-wide border-b-2 border-transparent focus:border-mv-cyan transition-colors py-2"
                         placeholder="ISSUE TITLE"
                      />
                 </div>
 
                 {/* Editor Toolbar */}
                 <div className="flex flex-wrap items-center justify-between px-6 py-2 gap-4 bg-slate-100 dark:bg-slate-900/30 border-t border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-1 bg-white dark:bg-black/20 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center gap-1 bg-white dark:bg-black/20 p-1 rounded-lg border border-slate-200 dark:border-slate-800" role="tablist" aria-label="Editor View Options">
                         <button 
                             onClick={() => setViewMode('preview')}
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${viewMode === 'preview' ? 'bg-cyan-100 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-500/30' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                            role="tab"
+                            aria-selected={viewMode === 'preview'}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all focus:ring-2 focus:ring-mv-cyan focus:outline-none ${viewMode === 'preview' ? 'bg-cyan-100 dark:bg-cyan-500/10 text-cyan-800 dark:text-cyan-400 border border-cyan-300 dark:border-cyan-500/30 shadow-sm' : 'text-slate-600 hover:text-slate-900 dark:hover:text-slate-300'}`}
                         >
-                            <Eye size={14} /> Preview
+                            <Eye size={14} aria-hidden="true" /> Preview
                         </button>
                         <button 
                             onClick={() => setViewMode('edit')}
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${viewMode === 'edit' ? 'bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                            role="tab"
+                            aria-selected={viewMode === 'edit'}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all focus:ring-2 focus:ring-mv-purple focus:outline-none ${viewMode === 'edit' ? 'bg-purple-100 dark:bg-purple-500/10 text-purple-900 dark:text-purple-400 border border-purple-300 dark:border-purple-500/30 shadow-sm' : 'text-slate-600 hover:text-slate-900 dark:hover:text-slate-300'}`}
                         >
-                            <Edit3 size={14} /> Edit
+                            <Edit3 size={14} aria-hidden="true" /> Edit
                         </button>
                     </div>
 
                     {viewMode === 'edit' && (
-                        <div className="flex items-center gap-1 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex items-center gap-1 animate-in fade-in slide-in-from-top-2" role="toolbar" aria-label="Editor Formatting Tools">
                              <div className="flex items-center border-r border-slate-300 dark:border-slate-800 pr-2 mr-2 gap-1">
-                                <button onClick={handleUndo} disabled={!canUndo} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 rounded hover:bg-slate-200 dark:hover:bg-white/5"><RotateCcw size={16}/></button>
-                                <button onClick={handleRedo} disabled={!canRedo} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 rounded hover:bg-slate-200 dark:hover:bg-white/5"><RotateCw size={16}/></button>
+                                <button onClick={handleUndo} disabled={!canUndo} className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 rounded hover:bg-slate-200 dark:hover:bg-white/5 focus:ring-2 focus:ring-mv-cyan focus:outline-none" aria-label="Undo"><RotateCcw size={16} aria-hidden="true"/></button>
+                                <button onClick={handleRedo} disabled={!canRedo} className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 rounded hover:bg-slate-200 dark:hover:bg-white/5 focus:ring-2 focus:ring-mv-cyan focus:outline-none" aria-label="Redo"><RotateCw size={16} aria-hidden="true"/></button>
                              </div>
                              
                              <div className="flex items-center gap-1">
-                                <button onClick={() => insertText('**', '**')} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 rounded hover:bg-slate-200 dark:hover:bg-white/5" title="Bold"><Bold size={16}/></button>
-                                <button onClick={() => insertText('_', '_')} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 rounded hover:bg-slate-200 dark:hover:bg-white/5" title="Italic"><Italic size={16}/></button>
-                                <button onClick={() => insertText('\n- ')} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 rounded hover:bg-slate-200 dark:hover:bg-white/5" title="Bullet List"><List size={16}/></button>
+                                <button onClick={() => insertText('**', '**')} className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-cyan-800 dark:hover:text-cyan-400 rounded hover:bg-slate-200 dark:hover:bg-white/5 focus:ring-2 focus:ring-mv-cyan focus:outline-none" aria-label="Bold Text"><Bold size={16} aria-hidden="true"/></button>
+                                <button onClick={() => insertText('_', '_')} className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-cyan-800 dark:hover:text-cyan-400 rounded hover:bg-slate-200 dark:hover:bg-white/5 focus:ring-2 focus:ring-mv-cyan focus:outline-none" aria-label="Italic Text"><Italic size={16} aria-hidden="true"/></button>
+                                <button onClick={() => insertText('\n- ')} className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-cyan-800 dark:hover:text-cyan-400 rounded hover:bg-slate-200 dark:hover:bg-white/5 focus:ring-2 focus:ring-mv-cyan focus:outline-none" aria-label="Insert Bulleted List"><List size={16} aria-hidden="true"/></button>
                                 <div className="relative">
-                                    <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-yellow-500 dark:hover:text-yellow-400 rounded hover:bg-slate-200 dark:hover:bg-white/5" title="Emoji"><Smile size={16}/></button>
+                                    <button 
+                                      onClick={() => setShowEmojiPicker(!showEmojiPicker)} 
+                                      className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 rounded hover:bg-slate-200 dark:hover:bg-white/5 focus:ring-2 focus:ring-mv-cyan focus:outline-none" 
+                                      aria-label="Insert Emoji"
+                                      aria-expanded={showEmojiPicker}
+                                      aria-haspopup="true"
+                                    >
+                                      <Smile size={16} aria-hidden="true"/>
+                                    </button>
                                     {showEmojiPicker && (
-                                        <div className="absolute top-full right-0 mt-2 bg-white dark:bg-[#0a0a0f] border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl p-2 grid grid-cols-5 gap-1 z-50 w-40">
+                                        <div className="absolute top-full right-0 mt-2 bg-white dark:bg-[#0a0a0f] border border-slate-300 dark:border-slate-700 rounded-lg shadow-xl p-2 grid grid-cols-5 gap-1 z-50 w-40" role="dialog" aria-label="Emoji Picker">
                                             {emojis.map(emoji => (
-                                                <button key={emoji} onClick={() => { insertText(emoji); setShowEmojiPicker(false); }} className="hover:bg-slate-100 dark:hover:bg-white/10 p-1 rounded text-lg">{emoji}</button>
+                                                <button key={emoji} onClick={() => { insertText(emoji); setShowEmojiPicker(false); }} className="hover:bg-slate-100 dark:hover:bg-white/10 p-1 rounded text-lg focus:ring-2 focus:ring-mv-cyan focus:outline-none" aria-label={`Insert ${emoji} emoji`}>{emoji}</button>
                                             ))}
                                         </div>
                                     )}
@@ -360,15 +363,19 @@ const BountyEditor: React.FC<BountyEditorProps> = ({
             {/* Editor Body */}
             <div className="flex-grow relative bg-white dark:bg-[#050508]">
                 {viewMode === 'edit' ? (
+                     <>
+                     <label htmlFor="draft-description-editor" className="sr-only">Bounty Markdown Description Editor</label>
                      <textarea 
+                        id="draft-description-editor"
                         ref={textareaRef}
                         value={draft.description}
                         onChange={(e) => updateDraftContent('description', e.target.value)}
                         className="w-full bg-transparent text-slate-900 dark:text-slate-300 p-6 md:p-8 resize-none focus:outline-none font-mono text-sm leading-relaxed custom-scrollbar min-h-[500px]"
                         spellCheck={false}
                      />
+                     </>
                 ) : (
-                    <div className="w-full p-6 md:p-8 custom-scrollbar">
+                    <div className="w-full p-6 md:p-8 custom-scrollbar focus:outline-none" tabIndex={0} aria-label="Preview of bounty description">
                          <SimpleMarkdownRenderer content={draft.description} />
                     </div>
                 )}
@@ -378,22 +385,24 @@ const BountyEditor: React.FC<BountyEditorProps> = ({
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0a0a0f] flex justify-between items-center">
                  <button 
                     onClick={onDiscard} 
-                    className="flex items-center gap-2 text-slate-500 hover:text-red-500 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                    className="flex items-center gap-2 text-slate-600 hover:text-red-700 dark:hover:text-red-500 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors focus:ring-2 focus:ring-red-500 focus:outline-none"
+                    aria-label="Discard this bounty draft"
                 >
-                    <Trash2 size={16} /> Discard
+                    <Trash2 size={16} aria-hidden="true" /> Discard
                  </button>
                  
                  <div className="flex gap-3">
                      <button 
                         onClick={copyToClipboard}
                         className={`
-                            px-6 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2
+                            px-6 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2 focus:ring-4 focus:outline-none
                             ${copied 
-                                ? 'bg-green-500 text-white hover:bg-green-600' 
-                                : 'bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0'}
+                                ? 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500/50' 
+                                : 'bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 hover:shadow-lg focus:ring-mv-cyan/50 hover:-translate-y-0.5 active:translate-y-0'}
                         `}
+                        aria-live="polite"
                     >
-                        {copied ? <Check size={16} /> : <Copy size={16} />} 
+                        {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />} 
                         {copied ? 'Copied!' : 'Copy to Clipboard'}
                      </button>
                  </div>

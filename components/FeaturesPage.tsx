@@ -55,7 +55,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({ onBack }) => {
           <h1 className="text-4xl md:text-6xl font-bold font-display uppercase tracking-tight mb-6 text-black dark:text-white leading-[1.1] italic">
             Why Developers & <br className="hidden md:block" /> 
             Organizations Choose <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-magenta">Lightning Bounties</span>
+            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-magenta pr-8 -mr-8">Lightning Bounties</span>
           </h1>
           <p className="text-lg text-black dark:text-white/60 font-bold uppercase tracking-[0.2em]">
             Zero friction. Global access. Instant rewards.

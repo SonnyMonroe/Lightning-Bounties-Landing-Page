@@ -37,11 +37,9 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
   const requestSort = (key: SortKey) => {
     let direction: SortDirection = 'asc';
     
-    // Default to descending for number based columns if checking for the first time
     if ((key === 'rewardsInSats' || key === 'claimedCount') && (!sortConfig || sortConfig.key !== key)) {
         direction = 'desc';
     } else if (sortConfig && sortConfig.key === key) {
-        // Toggle direction if clicking same header
         direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
     }
     
@@ -50,9 +48,9 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
 
   const getSortIcon = (key: SortKey) => {
       if (!sortConfig || sortConfig.key !== key) {
-          return <ArrowUpDown size={14} className="opacity-30 group-hover:opacity-100 transition-opacity" />;
+          return <ArrowUpDown size={14} className="opacity-30 group-hover:opacity-100 transition-opacity" aria-hidden="true" />;
       }
-      return sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />;
+      return sortConfig.direction === 'asc' ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />;
   };
 
   const getAriaSort = (key: SortKey) => {
@@ -71,57 +69,60 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
   };
 
   return (
-    <div className="w-full bg-white dark:bg-mv-card border border-slate-300 dark:border-mv-border rounded-xl overflow-hidden shadow-xl dark:shadow-2xl transition-colors duration-300">
-      <div className="p-8 border-b border-slate-300 dark:border-mv-border bg-slate-100/50 dark:bg-gradient-to-r dark:from-mv-card dark:to-mv-dark flex flex-col items-center justify-center text-center">
+    <div className="w-full bg-white dark:bg-mv-card border-2 border-slate-200 dark:border-mv-border rounded-2xl overflow-hidden shadow-xl dark:shadow-2xl transition-colors duration-300">
+      <div className="p-8 border-b-2 border-slate-200 dark:border-mv-border bg-slate-50 dark:bg-gradient-to-r dark:from-mv-card dark:to-mv-dark flex flex-col items-center justify-center text-center">
         <div className="flex flex-col items-center">
-            <h3 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white flex items-center justify-center gap-3 mb-2 font-display uppercase tracking-widest leading-none">
-            Bounty Hunter Leaderboard <Trophy size={32} className="text-yellow-500 drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]" strokeWidth={1.5} />
+            <h3 id="leaderboard-heading" className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white flex items-center justify-center gap-3 mb-2 font-display uppercase tracking-widest leading-none">
+            Bounty Hunter Leaderboard <Trophy size={32} className="text-yellow-600 drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]" aria-hidden="true" />
             </h3>
-            <p className="text-slate-700 dark:text-slate-400 text-sm md:text-base font-semibold max-w-lg mb-6">
+            <p className="text-slate-800 dark:text-slate-400 text-sm md:text-base font-bold max-w-lg mb-6">
             Top hunters earning Bitcoin. Solve issues, climb ranks, get paid.
             </p>
         </div>
 
-        <div className="flex justify-center">
-            <div className="bg-slate-300/50 dark:bg-white/5 p-1 rounded-lg flex items-center border border-slate-300 dark:border-white/10 shadow-inner">
+        <div className="flex justify-center" role="group" aria-label="Currency Toggle">
+            <div className="bg-slate-200/50 dark:bg-white/5 p-1 rounded-xl flex items-center border-2 border-slate-200 dark:border-white/10 shadow-inner">
                 <button
                     onClick={() => setCurrency('SATS')}
+                    aria-pressed={currency === 'SATS'}
                     className={`
-                        flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all
+                        flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all focus:outline-none focus:ring-2 focus:ring-mv-cyan
                         ${currency === 'SATS' 
-                            ? 'bg-white dark:bg-mv-cyan/20 text-slate-900 dark:text-mv-cyan shadow-md border border-slate-300 dark:border-mv-cyan/50' 
-                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}
+                            ? 'bg-white dark:bg-mv-cyan/20 text-cyan-900 dark:text-mv-cyan shadow-md border border-slate-300 dark:border-mv-cyan/50' 
+                            : 'text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'}
                     `}
                 >
-                   <Bitcoin size={14} /> Sats
+                   <Bitcoin size={14} aria-hidden="true" /> Sats
                 </button>
                 <button
                     onClick={() => setCurrency('USD')}
+                    aria-pressed={currency === 'USD'}
                     className={`
-                        flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all
+                        flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all focus:outline-none focus:ring-2 focus:ring-green-500
                         ${currency === 'USD' 
-                            ? 'bg-white dark:bg-green-500/20 text-slate-900 dark:text-green-400 shadow-md border border-slate-300 dark:border-green-500/50' 
-                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}
+                            ? 'bg-white dark:bg-green-500/20 text-green-900 dark:text-green-400 shadow-md border border-slate-300 dark:border-green-500/50' 
+                            : 'text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'}
                     `}
                 >
-                   <DollarSign size={14} /> USD
+                   <DollarSign size={14} aria-hidden="true" /> USD
                 </button>
             </div>
         </div>
       </div>
       
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[350px]">
-          <thead className="bg-slate-200 dark:bg-white/5 border-b border-slate-300 dark:border-mv-border text-slate-900 dark:text-slate-400 uppercase text-xs font-black tracking-widest font-display">
+        <table className="w-full text-left border-collapse min-w-[350px]" aria-labelledby="leaderboard-heading">
+          <thead className="bg-slate-100 dark:bg-white/5 border-b-2 border-slate-200 dark:border-mv-border text-slate-900 dark:text-slate-400 uppercase text-xs font-black tracking-widest font-display">
             <tr>
               <th 
                 scope="col"
-                className="px-3 sm:px-6 py-5 border-b border-slate-300 dark:border-mv-border group select-none"
+                className="px-4 sm:px-6 py-5 group select-none"
                 aria-sort={getAriaSort('developer')}
               >
                 <button 
-                  className="flex items-center gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:text-black dark:focus:text-white transition-colors w-full text-left"
+                  className="flex items-center gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:underline transition-colors w-full text-left"
                   onClick={() => requestSort('developer')}
+                  aria-label="Sort by Developer name"
                 >
                     Developer
                     {getSortIcon('developer')}
@@ -129,51 +130,53 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
               </th>
               <th 
                 scope="col"
-                className="px-3 sm:px-6 py-5 border-b border-slate-300 dark:border-mv-border text-center group select-none"
+                className="px-4 sm:px-6 py-5 text-center group select-none"
                 aria-sort={getAriaSort('claimedCount')}
               >
                 <button 
-                  className="flex items-center justify-center gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:text-black dark:focus:text-white transition-colors w-full"
+                  className="flex items-center justify-center gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:underline transition-colors w-full"
                   onClick={() => requestSort('claimedCount')}
+                  aria-label="Sort by Bounties Solved"
                 >
-                    Bounties Solved
+                    Solved
                     {getSortIcon('claimedCount')}
                 </button>
               </th>
               <th 
                 scope="col"
-                className="px-3 sm:px-6 py-5 border-b border-slate-300 dark:border-mv-border text-right group select-none"
+                className="px-4 sm:px-6 py-5 text-right group select-none"
                 aria-sort={getAriaSort('rewardsInSats')}
               >
                 <button 
-                  className="flex items-center justify-end gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:text-black dark:focus:text-white transition-colors w-full"
+                  className="flex items-center justify-end gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:underline transition-colors w-full"
                   onClick={() => requestSort('rewardsInSats')}
+                  aria-label="Sort by Total Rewards"
                 >
-                    Total Rewards
+                    Rewards
                     {getSortIcon('rewardsInSats')}
                 </button>
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-300 dark:divide-mv-border">
+          <tbody className="divide-y divide-slate-200 dark:divide-mv-border">
             {displayedDevelopers.map((dev, index) => (
-              <tr key={dev.developer} className="hover:bg-slate-100/50 dark:hover:bg-white/5 transition-all duration-200 group relative border-l-4 border-transparent hover:border-cyan-500 dark:hover:border-mv-cyan">
-                <td className="px-3 sm:px-6 py-5 whitespace-nowrap">
-                  <div className="flex items-center gap-2 sm:gap-4">
+              <tr key={dev.developer} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 group relative border-l-4 border-transparent hover:border-cyan-600 dark:hover:border-mv-cyan">
+                <td className="px-4 sm:px-6 py-5 whitespace-nowrap">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <div className="relative shrink-0">
                       <img 
                         src={dev.avatarUrl} 
-                        alt={dev.developer} 
-                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-slate-300 dark:border-mv-border object-cover group-hover:border-cyan-500 dark:group-hover:border-mv-cyan group-hover:ring-2 group-hover:ring-cyan-500/50 group-hover:scale-110 transition-all duration-300 shadow-md"
+                        alt="" 
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-slate-200 dark:border-mv-border object-cover group-hover:border-cyan-600 dark:group-hover:border-mv-cyan transition-all duration-300 shadow-sm"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${dev.developer}&background=random`;
                         }}
                       />
                       {(!sortConfig || (sortConfig.key === 'rewardsInSats' && sortConfig.direction === 'desc')) && index < 3 && (
-                        <div className={`absolute -top-2 -right-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[10px] font-black border-2 border-white dark:border-mv-card shadow-sm ${
+                        <div className={`absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black border-2 border-white dark:border-mv-card shadow-sm ${
                           index === 0 ? 'bg-yellow-500 text-black' : 
                           index === 1 ? 'bg-slate-300 text-black' : 
-                          'bg-amber-700 text-white'
+                          'bg-orange-800 text-white'
                         }`} aria-label={`Rank ${index + 1}`}>
                           {index + 1}
                         </div>
@@ -183,20 +186,21 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
                       href={`https://github.com/${dev.developer}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="font-black text-slate-900 dark:text-white hover:text-cyan-700 dark:hover:text-mv-cyan transition-colors text-sm sm:text-base focus:outline-none focus:underline group-hover:translate-x-1 duration-200 inline-block"
+                      className="font-black text-slate-950 dark:text-white hover:text-cyan-800 dark:hover:text-mv-cyan transition-colors text-sm sm:text-base focus:ring-2 focus:ring-mv-cyan focus:outline-none rounded px-1 group-hover:translate-x-1 duration-200"
+                      aria-label={`View ${dev.developer} on GitHub`}
                     >
                       {dev.developer}
                     </a>
                   </div>
                 </td>
-                <td className="px-3 sm:px-6 py-5 text-center whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm bg-purple-100 dark:bg-mv-purple/10 border border-purple-300 dark:border-mv-purple/20 text-purple-900 dark:text-mv-purple text-xs font-black group-hover:bg-purple-200 dark:group-hover:bg-mv-purple/20 transition-colors shadow-sm">
+                <td className="px-4 sm:px-6 py-5 text-center whitespace-nowrap">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-100 dark:bg-mv-purple/10 border-2 border-purple-200 dark:border-mv-purple/20 text-purple-900 dark:text-mv-purple text-xs font-black shadow-sm">
                     <Award size={12} className="sm:w-[14px] sm:h-[14px]" aria-hidden="true" />
                     {dev.claimedCount}
                   </span>
                 </td>
-                <td className="px-3 sm:px-6 py-5 text-right whitespace-nowrap">
-                  <div className={`font-mono font-black text-sm sm:text-base transition-colors group-hover:scale-105 origin-right duration-200 ${currency === 'SATS' ? 'text-cyan-800 dark:text-mv-cyan' : 'text-green-800 dark:text-green-400'}`}>
+                <td className="px-4 sm:px-6 py-5 text-right whitespace-nowrap">
+                  <div className={`font-mono font-black text-sm sm:text-base transition-colors group-hover:scale-105 origin-right duration-200 ${currency === 'SATS' ? 'text-cyan-900 dark:text-mv-cyan' : 'text-green-900 dark:text-green-400'}`}>
                     {formatReward(dev.rewardsInSats)}
                   </div>
                 </td>
@@ -207,15 +211,16 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
       </div>
 
       {developers.length > 5 && (
-        <div className="p-5 border-t border-slate-300 dark:border-mv-border bg-slate-50 dark:bg-mv-card text-center">
+        <div className="p-5 border-t-2 border-slate-200 dark:border-mv-border bg-slate-50 dark:bg-mv-card text-center">
           <button 
             onClick={() => setShowAll(!showAll)}
-            className="text-slate-800 dark:text-slate-400 hover:text-black dark:hover:text-white font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 mx-auto px-6 py-3 rounded-lg border border-slate-300 dark:border-white/10 hover:bg-white dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-sm hover:shadow-md"
+            className="text-slate-900 dark:text-slate-400 hover:text-black dark:hover:text-white font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 mx-auto px-6 py-3 rounded-xl border-2 border-slate-300 dark:border-white/10 hover:bg-white dark:hover:bg-white/5 focus:ring-4 focus:ring-mv-cyan/50 focus:outline-none"
+            aria-expanded={showAll}
           >
             {showAll ? (
-              <>Show Less <ChevronUp size={16} /></>
+              <>Show Fewer Hunters <ChevronUp size={16} aria-hidden="true" /></>
             ) : (
-              <>View All Hunters <ChevronDown size={16} /></>
+              <>View All Hunters <ChevronDown size={16} aria-hidden="true" /></>
             )}
           </button>
         </div>
