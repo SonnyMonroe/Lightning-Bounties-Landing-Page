@@ -22,30 +22,30 @@ interface TeamPageProps {
 const teamMembers: TeamMember[] = [
     {
         name: "Enrique Gamboa",
-        role: "AI & Cloud Architect",
-        bio: "DataEngineer, previous founder at MetaverseProfessional (NFT’s for merch shops). Motivated to bring tech and Bitcoin to Latin America.",
-        image: "https://media.licdn.com/dms/image/v2/C5603AQHKcoUqcW2GUQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1578958443600?e=1767225600&v=beta&t=nczyB2synr-OXoefwRJjy7RIUK4f3MPfnyDQKd0Q3d0",
+        role: "AI & Database Architect",
+        bio: "DataEngineer who builds robust APIs, data pipelines, and cloud architectures that keeps Lightning Bounties fast, secure, and scalable. Motivated to bring Bitcoin earning opportunities to Latin America.",
+        image: "images/team/enrique.jpg",
         socials: { twitter: "https://x.com/JEGamboaFuentes", github: "https://github.com/jegamboafuentes", linkedin: "https://www.linkedin.com/in/jegamboafuentes/" }
     },
     {
         name: "Will Sutton",
-        role: "Backend & Frontend Architect",
-        bio: "Fascinated by tech collaboration models: open-source ecosystems, Kaggle ML competitions, diy-biology hackerspaces. Background: finance, software instructor.",
-        image: "https://media.licdn.com/dms/image/v2/D4E03AQGj9WpUGh4vVQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1725553871735?e=1767225600&v=beta&t=e6mpxXIRGJabD_hOtWFuSMia6tVWzQ1aqFPyrtY7cD4",
+        role: "Product Strategy & Engineering",
+        bio: "Full-stack engineer passionate about open-source collaboration models. Co-founder of BosLab biology hackerspace. Leads Lightning Bounties engineering.",
+        image: "images/team/will.jpg",
         socials: { twitter: "https://x.com/WillSuttonCodes", github: "https://github.com/sutt", linkedin: "https://www.linkedin.com/in/willsutton17/" }
     },
     {
         name: "Mike Abramo",
-        role: "Backend & DevOps Architect",
-        bio: "DeFi researcher, key player in BostonDAO. Inspired by the potential of Bitcoin to upend centralized power structures.",
-        image: "https://media.licdn.com/dms/image/v2/D4E03AQE49CAHYOuLmg/profile-displayphoto-scale_200_200/B4EZsl0ZpkKMAY-/0/1765866057561?e=1767225600&v=beta&t=lWANYqG2Y8RzMXuRzn46KIYaiTXamNXhJmjScr2ZioE",
+        role: "Marketing & Developer Relations",
+        bio: "Seasoned crypto researcher leading product design, marketing, and technical writing. Spearheads developer relations strategy. Connects Bitcoin innovation with global open-source communities.",
+        image: "images/team/mike.jpg",
         socials: { twitter: "https://x.com/SonnyTheDegen", github: "https://github.com/SonnyMonroe", linkedin: "https://www.linkedin.com/in/michael-abramo/" }
     },
     {
         name: "Pavel Kononov",
-        role: "Backend & Databases Architect",
-        bio: "Concentration in Security & Backend, previously built a merchant payments app, and worked on chip design CAD. Currently completing CS degree.",
-        image: "https://pbs.twimg.com/media/GnvACfWWAAEQN6N?format=jpg&name=4096x4096",
+        role: "Engineering & Security",
+        bio: "Security-focused backend engineer who built merchant payments systems and chip design tools. Architects Lightning Bounties infrastructure and payment security protocols.",
+        image: "images/team/pavel.jpg",
         socials: { twitter: "https://x.com/pavelkononov93", github: "https://github.com/super-jaba", linkedin: "https://www.linkedin.com/in/kononovp/" }
     }
 ];
@@ -68,12 +68,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({ onBack }) => {
                     Back to Home
                 </button>
 
-                <div className="text-center mb-24 relative">
-                    <div className="inline-block mb-4 animate-in fade-in zoom-in duration-700 delay-100">
-                        <span className="py-1.5 px-4 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold uppercase tracking-[0.2em] shadow-lg">
-                            The Builders
-                        </span>
-                    </div>
+                <div className="text-center mb-20 relative">
                     <h1 className="text-6xl md:text-8xl font-bold text-slate-950 dark:text-white font-display uppercase tracking-tight mb-8 leading-[0.9] drop-shadow-sm">
                         Meet The <br className="md:hidden"/>
                         <span className="relative inline-block">
@@ -81,9 +76,21 @@ export const TeamPage: React.FC<TeamPageProps> = ({ onBack }) => {
                             <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-purple-700 dark:from-cyan-400 dark:to-purple-400">Team</span>
                         </span>
                     </h1>
-                    <p className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed">
-                        A multidisciplinary collective combining <span className="text-cyan-800 dark:text-cyan-400 font-bold">AI</span>, <span className="text-purple-800 dark:text-purple-400 font-bold">Cloud</span>, and <span className="text-slate-900 dark:text-white font-bold">Bitcoin</span> engineering.
-                    </p>
+
+                    <div className="inline-block mb-10 animate-in fade-in zoom-in duration-700 delay-100">
+                        <span className="py-2 px-6 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs md:text-sm font-black uppercase tracking-[0.2em] shadow-lg border border-slate-200 dark:border-none">
+                            Building Bitcoin's Open-Source Future
+                        </span>
+                    </div>
+
+                    <div className="max-w-3xl mx-auto space-y-6 text-lg md:text-xl text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+                        <p>
+                            Our team blends Bitcoin, Lightning, and open‑source to create a simple promise: if you fix bugs and ship features, you get paid instantly in sats—no banks, no borders.
+                        </p>
+                        <p className="text-base text-slate-500 dark:text-slate-500 italic">
+                            Decentralizing opportunity and accelerating open-source innovation with Bitcoin.
+                        </p>
+                    </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">

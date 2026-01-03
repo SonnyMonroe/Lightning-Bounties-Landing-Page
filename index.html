@@ -74,6 +74,10 @@
           linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
         mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        transform: translateZ(0); /* Force GPU */
+        will-change: transform;
+        pointer-events: none;
       }
       /* Custom scrollbar */
       ::-webkit-scrollbar {

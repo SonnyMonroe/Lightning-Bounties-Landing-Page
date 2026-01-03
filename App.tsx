@@ -16,107 +16,226 @@ import { Zap, Shield, Globe, ArrowRight, Github, X, TrendingUp, Users, GitBranch
 import { fetchLightningData, fetchBtcPrice } from './services/dataService';
 import { Developer, UnclaimedIssue, Metric } from './types';
 
-// Animated Connecting Dots Background for Data/Table Sections
-const NexusBackground: React.FC<{ isDark: boolean }> = ({ isDark }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
+// Helper hook to stop animations when off-screen
+const useCanvasAnimation = (
+  drawCallback: (ctx: CanvasRenderingContext2D, width: number, height: number, isDark: boolean) => void,
+  containerRef: React.RefObject<HTMLDivElement | HTMLCanvasElement>,
+  isDark: boolean
+) => {
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!container) return;
+
+    const canvas = container instanceof HTMLCanvasElement ? container : container.querySelector('canvas');
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+
+    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
     if (!ctx) return;
 
     let animationFrameId: number;
-    let particles: { x: number; y: number; vx: number; vy: number }[] = [];
-    const count = 40;
+    let isVisible = false;
+
+    // Observer to pause animation when not in viewport
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          loop();
+        } else {
+          cancelAnimationFrame(animationFrameId);
+        }
+      },
+      { threshold: 0.1 } 
+    );
+    observer.observe(container);
 
     const resize = () => {
       const parent = canvas.parentElement;
-      if (!parent) return;
-      canvas.width = parent.offsetWidth;
-      canvas.height = parent.offsetHeight;
-      init();
-    };
-
-    const init = () => {
-      particles = [];
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.6,
-          vy: (Math.random() - 0.5) * 0.6,
-        });
+      if (parent) {
+        canvas.width = parent.offsetWidth;
+        canvas.height = parent.offsetHeight;
       }
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // High contrast colors for light mode
-      const color = isDark ? '6, 182, 212' : '14, 116, 144';
-      
-      particles.forEach((p, i) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = isDark ? `rgba(${color}, 0.4)` : `rgba(${color}, 0.6)`;
-        ctx.fill();
-
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 220) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            const opacity = isDark ? 0.15 * (1 - dist / 220) : 0.25 * (1 - dist / 220);
-            ctx.strokeStyle = `rgba(${color}, ${opacity})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        }
-      });
-      animationFrameId = requestAnimationFrame(draw);
+    const loop = () => {
+      if (!isVisible) return;
+      drawCallback(ctx, canvas.width, canvas.height, isDark);
+      animationFrameId = requestAnimationFrame(loop);
     };
 
     window.addEventListener('resize', resize);
     resize();
-    draw();
+    
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
     };
-  }, [isDark]);
+  }, [isDark, drawCallback]); // Dependencies
+};
+
+
+// Animated Connecting Dots Background for Data/Table Sections
+const NexusBackground: React.FC<{ isDark: boolean }> = ({ isDark }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const particlesRef = useRef<{ x: number; y: number; vx: number; vy: number }[]>([]);
+  const initialized = useRef(false);
+
+  const draw = (ctx: CanvasRenderingContext2D, width: number, height: number, isDark: boolean) => {
+    // Initialize particles only once or on resize
+    if (!initialized.current || particlesRef.current.length === 0) {
+      const count = 25; // Reduced from 40 for performance
+      particlesRef.current = [];
+      for (let i = 0; i < count; i++) {
+        particlesRef.current.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.4, // Slower for smoother feel
+          vy: (Math.random() - 0.5) * 0.4,
+        });
+      }
+      initialized.current = true;
+    }
+
+    ctx.clearRect(0, 0, width, height);
+    const r = isDark ? 6 : 14;
+    const g = isDark ? 182 : 116;
+    const b = isDark ? 212 : 144;
+    
+    // Draw and update
+    for (let i = 0; i < particlesRef.current.length; i++) {
+      const p = particlesRef.current[i];
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0 || p.x > width) p.vx *= -1;
+      if (p.y < 0 || p.y > height) p.vy *= -1;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isDark ? 0.4 : 0.6})`;
+      ctx.fill();
+
+      // Connections - Optimized loop
+      for (let j = i + 1; j < particlesRef.current.length; j++) {
+        const p2 = particlesRef.current[j];
+        const dx = p.x - p2.x;
+        const dy = p.y - p2.y;
+        const distSq = dx * dx + dy * dy; // Avoid sqrt for perf check
+        
+        if (distSq < 40000) { // 200^2
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p2.x, p2.y);
+          const opacity = (1 - distSq / 40000) * (isDark ? 0.15 : 0.25);
+          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+  };
+
+  useCanvasAnimation(draw, canvasRef, isDark);
 
   return <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none opacity-60" aria-hidden="true" />;
 };
 
-// Moving Blurred Blobs for Promo Sections
+// Interactive Mouse-Reactive Particle System with Ambient Glows
 const AuraBackground: React.FC<{ isDark: boolean }> = ({ isDark }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef({ x: -9999, y: -9999 });
+  const particlesRef = useRef<{ x: number; y: number; vx: number; vy: number; size: number }[]>([]);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!canvasRef.current) return;
+      const rect = canvasRef.current.getBoundingClientRect();
+      mouseRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const draw = (ctx: CanvasRenderingContext2D, width: number, height: number, isDark: boolean) => {
+    if (!initialized.current || particlesRef.current.length === 0) {
+      particlesRef.current = [];
+      const particleCount = 45; 
+      for (let i = 0; i < particleCount; i++) {
+        particlesRef.current.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: Math.random() * 1.5 + 0.5,
+        });
+      }
+      initialized.current = true;
+    }
+
+    ctx.clearRect(0, 0, width, height);
+    
+    const baseR = isDark ? 6 : 14;
+    const baseG = isDark ? 182 : 116;
+    const baseB = isDark ? 212 : 144;
+    
+    // Connection threshold squared
+    const mouseDistSq = 200 * 200;
+
+    for (let i = 0; i < particlesRef.current.length; i++) {
+      const p = particlesRef.current[i];
+      
+      // Update position
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Bounce
+      if (p.x < 0 || p.x > width) p.vx *= -1;
+      if (p.y < 0 || p.y > height) p.vy *= -1;
+
+      // Draw Particle
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${baseR}, ${baseG}, ${baseB}, ${isDark ? 0.6 : 0.4})`;
+      ctx.fill();
+
+      // Mouse Connection
+      const dx = p.x - mouseRef.current.x;
+      const dy = p.y - mouseRef.current.y;
+      const distSq = dx * dx + dy * dy;
+
+      if (distSq < mouseDistSq) {
+        const opacity = (1 - distSq / mouseDistSq) * (isDark ? 0.6 : 0.4);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
+        ctx.strokeStyle = `rgba(${baseR}, ${baseG}, ${baseB}, ${opacity})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+  };
+
+  useCanvasAnimation(draw, canvasRef, isDark);
+
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-30 dark:opacity-40" aria-hidden="true">
-      <motion.div 
-        animate={{ 
-          x: [0, 150, 0], 
-          y: [0, 100, 0],
-          scale: [1, 1.3, 1] 
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-mv-cyan/40 blur-[140px]" 
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Ambient CSS Glows for Performance */}
+      <div 
+          className="absolute -top-[20%] -left-[20%] w-[70%] h-[70%] rounded-full opacity-30 dark:opacity-20 animate-pulse" 
+          style={{ background: 'radial-gradient(circle, rgba(188, 19, 254, 0.4) 0%, transparent 70%)', transform: 'translateZ(0)', animationDuration: '8s' }}
       />
-      <motion.div 
-        animate={{ 
-          x: [0, -120, 0], 
-          y: [0, -100, 0],
-          scale: [1.2, 0.8, 1.2] 
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        className="absolute bottom-[-20%] right-[-20%] w-[70%] h-[70%] rounded-full bg-mv-purple/40 blur-[140px]" 
+      <div 
+          className="absolute top-[20%] -right-[20%] w-[70%] h-[70%] rounded-full opacity-30 dark:opacity-20 animate-pulse" 
+          style={{ background: 'radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, transparent 70%)', transform: 'translateZ(0)', animationDuration: '10s', animationDelay: '1s' }}
       />
+      
+      {/* Interactive Layer */}
+      <canvas ref={canvasRef} className="absolute inset-0" />
     </div>
   );
 };
@@ -124,238 +243,217 @@ const AuraBackground: React.FC<{ isDark: boolean }> = ({ isDark }) => {
 // Flowing Particle Network Background for Feature Section
 const FlowingBackground: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const particlesRef = useRef<{ x: number; y: number; vx: number; vy: number; size: number }[]>([]);
+  const initialized = useRef(false);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let particles: { x: number; y: number; vx: number; vy: number; size: number }[] = [];
-    const particleCount = 50;
-    const connectionDistance = 250;
-
-    const resize = () => {
-      const container = canvas.parentElement;
-      if (container) {
-        canvas.width = container.offsetWidth;
-        canvas.height = container.offsetHeight;
-      }
-      initParticles();
-    };
-
-    const initParticles = () => {
-      particles = [];
+  const draw = (ctx: CanvasRenderingContext2D, width: number, height: number, isDark: boolean) => {
+    if (!initialized.current || particlesRef.current.length === 0) {
+      particlesRef.current = [];
+      const particleCount = 30; // Reduced from 50
       for (let i = 0; i < particleCount; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
+        particlesRef.current.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
           vx: (Math.random() - 0.5) * 0.5,
           vy: (Math.random() - 0.5) * 0.5,
-          size: Math.random() * 2.5 + 1,
+          size: Math.random() * 2 + 1,
         });
       }
-    };
+      initialized.current = true;
+    }
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const color = isDark ? '6, 182, 212' : '14, 116, 144';
+    ctx.clearRect(0, 0, width, height);
+    const r = isDark ? 6 : 14;
+    const g = isDark ? 182 : 116;
+    const b = isDark ? 212 : 144;
 
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
+    for (let i = 0; i < particlesRef.current.length; i++) {
+      const p = particlesRef.current[i];
+      p.x += p.vx;
+      p.y += p.vy;
 
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      if (p.x < 0 || p.x > width) p.vx *= -1;
+      if (p.y < 0 || p.y > height) p.vy *= -1;
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = isDark ? `rgba(${color}, 0.5)` : `rgba(${color}, 0.7)`;
-        ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isDark ? 0.5 : 0.7})`;
+      ctx.fill();
 
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dx = p.x - p2.x;
-          const dy = p.y - p2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+      // Optimize connection drawing
+      for (let j = i + 1; j < particlesRef.current.length; j++) {
+        const p2 = particlesRef.current[j];
+        const dx = p.x - p2.x;
+        const dy = p.y - p2.y;
+        const distSq = dx * dx + dy * dy;
 
-          if (dist < connectionDistance) {
-            const opacity = isDark ? (1 - dist / connectionDistance) * 0.2 : (1 - dist / connectionDistance) * 0.35;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(${color}, ${opacity})`;
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
-          }
+        // 250^2 = 62500
+        if (distSq < 62500) {
+          const dist = Math.sqrt(distSq);
+          const opacity = isDark ? (1 - dist / 250) * 0.2 : (1 - dist / 250) * 0.35;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
         }
       }
-      animationFrameId = requestAnimationFrame(draw);
-    };
+    }
+  };
 
-    window.addEventListener('resize', resize);
-    resize();
-    draw();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [isDark]);
-
+  useCanvasAnimation(draw, canvasRef, isDark);
   return <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none opacity-50 dark:opacity-70" aria-hidden="true" />;
 };
 
-// Refined Particle Globe Background for Hero Section
+// Refined Particle Globe Background for Hero Section - Heavily Optimized
 const ParticleGlobe: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Store unit sphere coordinates (x,y,z) instead of spherical angles to avoid trig in loop
+  const particlesRef = useRef<{ x: number; y: number; z: number; size: number; color: string; isGrid: boolean }[]>([]);
+  const angleRef = useRef({ x: 0.2, y: 0 });
+  const initialized = useRef(false);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let particles: { theta: number; phi: number; radius: number; size: number; color: string; isGrid: boolean }[] = [];
-    const numRandomParticles = 1000;
+  const draw = (ctx: CanvasRenderingContext2D, width: number, height: number, isDark: boolean) => {
+    // Dynamic radius based on current width
+    const globeRadius = Math.min(width * 0.45, 400);
     
-    // Dynamically adjust radius based on viewport
-    const getRadius = () => Math.min(window.innerWidth * 0.4, 420);
+    const cyanColor = isDark ? '#06b6d4' : '#0e7490'; 
+    const magentaColor = isDark ? '#d946ef' : '#a21caf'; 
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initParticles();
-    };
-
-    const initParticles = () => {
-      particles = [];
-      const globeRadius = getRadius();
+    // Initialize particles (run once)
+    if (!initialized.current) {
+      particlesRef.current = [];
       
-      // Use higher contrast colors for light mode
-      const cyanColor = isDark ? '#06b6d4' : '#0e7490'; 
-      const magentaColor = isDark ? '#d946ef' : '#a21caf'; 
-      
-      const latLines = 16;
-      const lngLines = 24;
+      // Grid Particles (Unit Sphere)
+      const latLines = 12; 
+      const lngLines = 18; 
 
       for (let lat = 0; lat <= latLines; lat++) {
         const phi = (lat / latLines) * Math.PI;
+        const sinPhi = Math.sin(phi);
+        const cosPhi = Math.cos(phi);
+
         for (let lng = 0; lng < lngLines; lng++) {
           const theta = (lng / lngLines) * 2 * Math.PI;
-          particles.push({
-            theta,
-            phi,
-            radius: globeRadius,
-            size: 2,
-            color: cyanColor,
-            isGrid: true
+          // Unit sphere coordinates
+          const x = sinPhi * Math.cos(theta);
+          const y = sinPhi * Math.sin(theta);
+          const z = cosPhi;
+          
+          particlesRef.current.push({
+            x, y, z, size: 2, color: cyanColor, isGrid: true
           });
         }
       }
 
+      // Random Particles (Unit Sphere)
+      const numRandomParticles = 180; 
       for (let i = 0; i < numRandomParticles; i++) {
-        particles.push({
-          theta: Math.random() * Math.PI * 2,
-          phi: Math.acos(Math.random() * 2 - 1),
-          radius: globeRadius,
-          size: Math.random() * 2.5 + 0.5,
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        const x = Math.sin(phi) * Math.cos(theta);
+        const y = Math.sin(phi) * Math.sin(theta);
+        const z = Math.cos(phi);
+        
+        particlesRef.current.push({
+          x, y, z,
+          size: Math.random() * 2 + 0.5,
           color: i % 3 === 0 ? magentaColor : cyanColor,
           isGrid: false
         });
       }
-    };
+      initialized.current = true;
+    }
 
-    let angleY = 0;
-    let angleX = 0.2; 
+    ctx.clearRect(0, 0, width, height);
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const globeRadius = getRadius();
+    // Animation state
+    angleRef.current.y += 0.002; 
+    angleRef.current.x = 0.2 + Math.sin(Date.now() * 0.0005) * 0.05; // Subtle tilt oscillation
 
-      angleY += 0.003; 
+    const cosY = Math.cos(angleRef.current.y);
+    const sinY = Math.sin(angleRef.current.y);
+    const cosX = Math.cos(angleRef.current.x);
+    const sinX = Math.sin(angleRef.current.x);
 
-      const renderedParticles = particles.map(p => {
-        let x = p.radius * Math.sin(p.phi) * Math.cos(p.theta);
-        let y = p.radius * Math.sin(p.phi) * Math.sin(p.theta);
-        let z = p.radius * Math.cos(p.phi);
+    // Buffer for depth sorting
+    const renderList = [];
 
-        const cosY = Math.cos(angleY);
-        const sinY = Math.sin(angleY);
-        let rx = x * cosY - z * sinY;
-        let rz = x * sinY + z * cosY;
+    // Transform and Project
+    const len = particlesRef.current.length;
+    for(let i=0; i<len; i++) {
+        const p = particlesRef.current[i];
+        
+        // Scale unit sphere to current radius
+        const px = p.x * globeRadius;
+        const py = p.y * globeRadius;
+        const pz = p.z * globeRadius;
 
-        const cosX = Math.cos(angleX);
-        const sinX = Math.sin(angleX);
-        let ry = y * cosX - rz * sinX;
-        let rzFinal = y * sinX + rz * cosX;
+        // Rotate Y
+        const rx = px * cosY - pz * sinY;
+        const rz1 = px * sinY + pz * cosY;
 
-        return { x: rx, y: ry, z: rzFinal, size: p.size, color: p.color, isGrid: p.isGrid };
-      });
+        // Rotate X
+        const ry = py * cosX - rz1 * sinX;
+        const rz = py * sinX + rz1 * cosX;
 
-      renderedParticles.sort((a, b) => b.z - a.z);
+        renderList.push({
+            x: rx, y: ry, z: rz,
+            size: p.size, color: p.color, isGrid: p.isGrid
+        });
+    }
 
-      // Sphere internal glow for better contrast
-      const grd = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, globeRadius * 1.3);
-      if (isDark) {
-        grd.addColorStop(0, 'rgba(6, 182, 212, 0.08)');
-        grd.addColorStop(1, 'rgba(0,0,0,0)');
-      } else {
-        grd.addColorStop(0, 'rgba(14, 116, 144, 0.2)');
-        grd.addColorStop(1, 'rgba(255,255,255,0)');
-      }
-      ctx.fillStyle = grd;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, globeRadius * 1.3, 0, Math.PI * 2);
-      ctx.fill();
+    // Sort by depth (z)
+    renderList.sort((a, b) => b.z - a.z);
 
-      renderedParticles.forEach(p => {
-        const perspective = 1200;
+    // Draw Background Glow
+    const grd = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, globeRadius * 1.3);
+    if (isDark) {
+      grd.addColorStop(0, 'rgba(6, 182, 212, 0.08)');
+      grd.addColorStop(1, 'rgba(0,0,0,0)');
+    } else {
+      grd.addColorStop(0, 'rgba(14, 116, 144, 0.12)');
+      grd.addColorStop(1, 'rgba(255,255,255,0)');
+    }
+    ctx.fillStyle = grd;
+    ctx.fillRect(centerX - globeRadius * 1.5, centerY - globeRadius * 1.5, globeRadius * 3, globeRadius * 3);
+
+    // Render Particles
+    const perspective = 1000;
+    for(let i=0; i<len; i++) {
+        const p = renderList[i];
         const scale = perspective / (perspective + p.z);
         const x2d = centerX + p.x * scale;
         const y2d = centerY + p.y * scale;
         
-        const depthFactor = (p.z + globeRadius) / (globeRadius * 2);
+        // Skip if behind camera too much
+        if (scale < 0) continue;
+
+        const depthFactor = (p.z + globeRadius) / (globeRadius * 2); // ~0 (back) to ~1 (front)
         
-        let opacity;
+        // Visibility Check
+        let alpha;
         if (isDark) {
-            opacity = p.isGrid ? depthFactor * 0.85 : depthFactor * 0.6;
+            alpha = p.isGrid ? depthFactor * 0.6 : depthFactor * 0.8;
         } else {
-            // Higher base opacity for light mode
-            opacity = p.isGrid ? (depthFactor * 0.6) + 0.4 : (depthFactor * 0.4) + 0.3;
+            alpha = p.isGrid ? (depthFactor * 0.3) + 0.1 : (depthFactor * 0.4) + 0.2;
         }
+
+        if (alpha <= 0.05) continue;
 
         ctx.beginPath();
         ctx.arc(x2d, y2d, p.size * scale, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
-        ctx.globalAlpha = Math.min(opacity, 1);
+        ctx.globalAlpha = alpha;
         ctx.fill();
-        
-        if (isDark && p.isGrid && p.z < 0) {
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = p.color;
-        } else {
-          ctx.shadowBlur = 0;
-        }
-      });
+    }
+    ctx.globalAlpha = 1;
+  };
 
-      animationFrameId = requestAnimationFrame(draw);
-    };
-
-    window.addEventListener('resize', resize);
-    resize();
-    draw();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [isDark]);
+  useCanvasAnimation(draw, canvasRef, isDark);
 
   return (
     <canvas 
@@ -500,13 +598,16 @@ export const App: React.FC = () => {
                   <div className="absolute inset-0 z-0">
                     <motion.div 
                       style={{ y: globeY }} 
-                      className="absolute inset-x-0 top-[5%] bottom-[42%] lg:inset-0 flex items-center justify-center"
+                      className="absolute inset-x-0 top-[10%] bottom-[50%] lg:inset-0 flex items-center justify-center will-change-transform"
                     >
                         <ParticleGlobe isDark={darkMode} />
                     </motion.div>
                   </div>
                   
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1400px] h-[1400px] bg-mv-cyan/10 dark:bg-mv-cyan/20 rounded-full blur-[220px] pointer-events-none" aria-hidden="true" />
+                  {/* Dynamic Background */}
+                  <div className="absolute inset-0 z-0">
+                    <AuraBackground isDark={darkMode} />
+                  </div>
                   
                   <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-24">
@@ -530,7 +631,7 @@ export const App: React.FC = () => {
 
                         <h1 className="text-5xl md:text-7xl xl:text-8xl font-black tracking-tight text-slate-950 dark:text-white mb-6 font-display uppercase leading-[0.85] italic text-shadow-sm dark:text-shadow-none">
                             <span className="inline-block pr-2">LIGHTNING</span> <br/>
-                            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan dark:from-mv-cyan to-mv-purple dark:to-mv-purple pr-8 -mr-8">BOUNTIES</span>
+                            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-900 dark:from-mv-cyan to-indigo-950 dark:to-mv-purple pr-8 -mr-8">BOUNTIES</span>
                         </h1>
 
                         <motion.h2 
@@ -546,7 +647,7 @@ export const App: React.FC = () => {
                               }
                             }
                           }}
-                          className="text-lg md:text-2xl font-black mb-10 tracking-[0.2em] font-display uppercase italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-900 via-purple-900 to-fuchsia-900 dark:from-mv-cyan dark:via-mv-purple dark:to-mv-magenta"
+                          className="text-lg md:text-2xl font-black mb-10 tracking-[0.2em] font-display uppercase italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-950 via-purple-950 to-indigo-950 dark:from-mv-cyan dark:via-mv-purple dark:to-mv-magenta"
                         >
                            {"GITHUB BOUNTIES PAID IN BITCOIN".split(" ").map((word, i) => (
                              <motion.span 
@@ -562,7 +663,7 @@ export const App: React.FC = () => {
                            ))}
                         </motion.h2>
                         
-                        <p className="max-w-xl mx-auto lg:mx-0 text-base md:text-lg text-slate-950 dark:text-white/60 mb-12 font-bold leading-relaxed font-sans">
+                        <p className="max-w-xl mx-auto lg:mx-0 text-base md:text-lg text-slate-900 dark:text-white/60 mb-12 font-black leading-relaxed font-sans">
                             Reward open-source developers instantly in <span className="text-cyan-900 dark:text-mv-cyan font-black">Bitcoin</span> for solving GitHub issues.
                         </p>
                         
@@ -597,9 +698,9 @@ export const App: React.FC = () => {
                         className="flex-1 hidden lg:flex justify-end items-center perspective-1000 z-10"
                       >
                         <div className="relative w-[480px] h-[480px] flex items-center justify-center">
-                            <motion.div animate={{ rotate: 360 }} transition={{ duration: 40, repeat: Infinity, ease: "linear" }} className="absolute inset-0 rounded-full border border-mv-cyan/30 dark:border-mv-cyan/10 border-dashed" />
-                            <motion.div animate={{ rotate: -360 }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }} className="absolute inset-16 rounded-full border-2 border-slate-300 dark:border-white/5 border-dotted" />
-                            <motion.div animate={{ rotate: 360 }} transition={{ duration: 35, repeat: Infinity, ease: "linear" }} className="absolute inset-0">
+                            <motion.div animate={{ rotate: 360 }} transition={{ duration: 40, repeat: Infinity, ease: "linear" }} className="absolute inset-0 rounded-full border border-mv-cyan/30 dark:border-mv-cyan/10 border-dashed" style={{ willChange: 'transform' }} />
+                            <motion.div animate={{ rotate: -360 }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }} className="absolute inset-16 rounded-full border-2 border-slate-300 dark:border-white/5 border-dotted" style={{ willChange: 'transform' }} />
+                            <motion.div animate={{ rotate: 360 }} transition={{ duration: 35, repeat: Infinity, ease: "linear" }} className="absolute inset-0" style={{ willChange: 'transform' }}>
                                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-black/80 p-3 rounded-xl border border-slate-200 dark:border-mv-cyan/40 shadow-xl backdrop-blur-md"><Cpu size={24} className="text-mv-cyan" /></div>
                                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-black/80 p-3 rounded-xl border border-slate-200 dark:border-mv-magenta/40 shadow-xl backdrop-blur-md"><Database size={24} className="text-mv-magenta" /></div>
                                 <div className="absolute top-1/2 -left-3 -translate-y-1/2 bg-white/90 dark:bg-black/80 p-3 rounded-xl border border-slate-200 dark:border-mv-cyan/40 shadow-xl backdrop-blur-md"><GitBranch size={24} className="text-mv-cyan" /></div>
@@ -622,7 +723,9 @@ export const App: React.FC = () => {
 
                 {/* Metrics Section */}
                 <section className="relative z-20 py-24 bg-slate-50 dark:bg-black border-y border-slate-200 dark:border-white/5 transition-colors duration-1000 overflow-hidden">
-                  <NexusBackground isDark={darkMode} />
+                  <div className="absolute inset-0">
+                    <NexusBackground isDark={darkMode} />
+                  </div>
                   <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10">
                       {[
@@ -678,13 +781,15 @@ export const App: React.FC = () => {
                      <FlowingBackground isDark={darkMode} />
                      
                      <div className="relative z-10 text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 font-display uppercase tracking-tight italic leading-[1.1]">
+                        <h2 className="text-xl sm:text-2xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 font-display uppercase tracking-tight italic leading-[1.1]">
                             WHY DEVELOPERS & <br className="hidden md:block" /> 
                             ORGANIZATIONS CHOOSE <br />
                             <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-mv-cyan to-mv-magenta pr-8 -mr-8">LIGHTNING BOUNTIES</span>
                         </h2>
                         <p className="text-sm md:text-lg text-slate-600 dark:text-white/60 font-bold uppercase tracking-[0.3em]">
-                            ZERO FRICTION. GLOBAL ACCESS. INSTANT REWARDS.
+                            <span className="block sm:inline">ZERO FRICTION.</span>{' '}
+                            <span className="block sm:inline">GLOBAL ACCESS.</span>{' '}
+                            <span className="block sm:inline">INSTANT REWARDS.</span>
                         </p>
                     </div>
 

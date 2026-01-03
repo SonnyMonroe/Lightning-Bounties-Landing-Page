@@ -182,7 +182,7 @@ export const BountyAssistant: React.FC = () => {
                     <Sparkles size={14} aria-hidden="true" />
                     <span>Powered by Gemini 3</span>
                 </div>
-                <h3 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-tight">Bounty Architect AI</h3>
+                <h3 className="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white mb-4 font-display uppercase tracking-tight">Bounty Architect AI</h3>
                 <p className="text-slate-700 dark:text-slate-400 text-lg">Not sure how to structure your task? Describe it simply, and we'll draft it for you.</p>
             </div>
 
