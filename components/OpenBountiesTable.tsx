@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { UnclaimedIssue } from '../types';
 import { Zap, Github, ChevronDown, ChevronUp, ArrowUpDown, ExternalLink, Bitcoin, DollarSign, Target } from 'lucide-react';
@@ -214,28 +215,28 @@ export const OpenBountiesTable: React.FC<OpenBountiesTableProps> = ({ bounties, 
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="flex items-center gap-1 hover:text-cyan-800 dark:hover:text-mv-cyan underline decoration-slate-400/50 font-bold"
+                                className="flex items-center gap-1 hover:text-cyan-800 dark:hover:text-mv-cyan underline decoration-slate-400/50 font-bold max-w-[120px]"
                                 aria-label={`Repository ${bounty.repository}`}
                             >
-                                <Github size={10} aria-hidden="true" />
-                                {bounty.repository}
+                                <Github size={10} className="shrink-0" aria-hidden="true" />
+                                <span className="truncate">{bounty.repository}</span>
                             </a>
                             </div>
                         </div>
                     </div>
                   </td>
-                  <td className="px-2 sm:px-6 py-3 sm:py-5 hidden sm:table-cell whitespace-nowrap text-left">
+                  <td className="px-2 sm:px-6 py-3 sm:py-5 hidden sm:table-cell text-left max-w-0">
                     <a 
                         href={githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-400 font-mono text-xs font-bold hover:text-cyan-800 dark:hover:text-mv-cyan transition-colors hover:underline decoration-cyan-500/30 underline-offset-4"
+                        className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-400 font-mono text-xs font-bold hover:text-cyan-800 dark:hover:text-mv-cyan transition-colors hover:underline decoration-cyan-500/30 underline-offset-4 w-full"
                         aria-label={`View repository ${bounty.repository} on GitHub`}
                     >
-                      <Github size={14} aria-hidden="true" />
-                      {bounty.repository}
-                      <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+                      <Github size={14} className="shrink-0" aria-hidden="true" />
+                      <span className="truncate block">{bounty.repository}</span>
+                      <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0" aria-hidden="true" />
                     </a>
                   </td>
                   <td className="px-2 sm:px-6 py-3 sm:py-5 text-center whitespace-nowrap">
