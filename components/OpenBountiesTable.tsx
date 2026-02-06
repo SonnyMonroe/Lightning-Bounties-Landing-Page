@@ -57,9 +57,9 @@ export const OpenBountiesTable: React.FC<OpenBountiesTableProps> = ({ bounties, 
   const getSortIcon = (key: SortKey) => {
       const iconClass = "hidden sm:inline-block ml-1";
       if (!sortConfig || sortConfig.key !== key) {
-          return <span className={iconClass}><ArrowUpDown size={12} className="opacity-30 group-hover:opacity-100 transition-opacity" /></span>;
+          return <span className={iconClass}><ArrowUpDown size={12} className="opacity-30 group-hover:opacity-100 transition-opacity" aria-hidden="true" /></span>;
       }
-      return <span className={iconClass}>{sortConfig.direction === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />}</span>;
+      return <span className={iconClass}>{sortConfig.direction === 'asc' ? <ChevronUp size={12} aria-hidden="true" /> : <ChevronDown size={12} aria-hidden="true" />}</span>;
   };
 
   const getAriaSort = (key: SortKey) => {
@@ -84,21 +84,29 @@ export const OpenBountiesTable: React.FC<OpenBountiesTableProps> = ({ bounties, 
 
   return (
     <div className="w-full bg-white dark:bg-mv-card border border-slate-300 dark:border-mv-border rounded-xl overflow-hidden shadow-xl dark:shadow-2xl transition-colors duration-300">
-      <div className="p-6 md:p-8 border-b border-slate-300 dark:border-mv-border bg-slate-100/50 dark:bg-gradient-to-r dark:from-mv-card dark:to-mv-dark flex flex-col items-center justify-center text-center">
-        <div className="flex flex-col items-center w-full">
+      <div className="relative overflow-hidden p-6 md:p-8 border-b border-slate-300 dark:border-mv-border bg-slate-100/50 dark:bg-gradient-to-r dark:from-mv-card dark:to-mv-dark flex flex-col items-center justify-center text-center">
+        
+        {/* Background Decorative Icon */}
+        <div className="absolute -right-8 -bottom-10 opacity-[0.08] dark:opacity-[0.05] pointer-events-none transform rotate-12 select-none">
+             <Target size={200} className="text-orange-600 dark:text-orange-500 w-32 h-32 md:w-52 md:h-52" strokeWidth={1} />
+        </div>
+        
+        <div className="relative z-10 flex flex-col items-center w-full">
             <h3 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white flex items-center justify-center gap-3 mb-2 font-display uppercase tracking-widest leading-none text-center">
             Unsolved Bounties 
-            <Target size={24} className="md:w-8 md:h-8 text-orange-500 drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]" strokeWidth={1.5} />
+            <Target size={24} className="md:w-8 md:h-8 text-orange-500 drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]" strokeWidth={1.5} aria-hidden="true" />
             </h3>
             <p className="text-slate-700 dark:text-slate-400 text-xs md:text-base font-semibold max-w-lg mb-6 text-center">
             Open opportunities available for YOU to solve!
             </p>
         </div>
 
-        <div className="flex justify-center">
+        <div className="relative z-10 flex justify-center">
             <div className="bg-slate-300/50 dark:bg-white/5 p-1 rounded-lg flex items-center border border-slate-300 dark:border-white/10 shadow-inner scale-90 md:scale-100">
                 <button
                     onClick={() => setCurrency('SATS')}
+                    aria-label="Display rewards in Satoshis"
+                    aria-pressed={currency === 'SATS'}
                     className={`
                         flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all
                         ${currency === 'SATS' 
@@ -106,10 +114,12 @@ export const OpenBountiesTable: React.FC<OpenBountiesTableProps> = ({ bounties, 
                             : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}
                     `}
                 >
-                   <Bitcoin size={14} /> Sats
+                   <Bitcoin size={14} aria-hidden="true" /> Sats
                 </button>
                 <button
                     onClick={() => setCurrency('USD')}
+                    aria-label="Display rewards in USD"
+                    aria-pressed={currency === 'USD'}
                     className={`
                         flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all
                         ${currency === 'USD' 
@@ -117,25 +127,25 @@ export const OpenBountiesTable: React.FC<OpenBountiesTableProps> = ({ bounties, 
                             : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}
                     `}
                 >
-                   <DollarSign size={14} /> USD
+                   <DollarSign size={14} aria-hidden="true" /> USD
                 </button>
             </div>
         </div>
       </div>
       
       <div className="overflow-x-auto scrollbar-hide">
-        <table className="w-full text-left border-collapse min-w-full">
+        <table className="w-full text-left border-collapse table-fixed min-w-full">
           <thead className="bg-slate-200 dark:bg-white/5 border-b border-slate-300 dark:border-mv-border text-slate-900 dark:text-slate-400 uppercase text-[10px] sm:text-xs font-black tracking-widest font-display">
             <tr>
-              <th className="hidden sm:table-cell px-2 sm:px-6 py-3 sm:py-5 border-b border-slate-300 dark:border-mv-border w-12 sm:w-16" scope="col"></th>
               <th 
                 scope="col"
-                className="px-2 sm:px-6 py-3 sm:py-5 border-b border-slate-300 dark:border-mv-border group select-none text-center sm:text-left"
+                className="px-2 sm:px-6 py-3 sm:py-5 border-b border-slate-300 dark:border-mv-border group select-none text-center"
                 aria-sort={getAriaSort('title')}
               >
                 <button 
-                  className="flex items-center justify-center sm:justify-start gap-1 sm:gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:text-black dark:focus:text-white transition-colors w-full"
+                  className="flex items-center justify-center gap-1 sm:gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:text-black dark:focus:text-white transition-colors w-full"
                   onClick={() => requestSort('title')}
+                  aria-label="Sort by Bounty Name"
                 >
                     Bounty Name
                     {getSortIcon('title')}
@@ -143,12 +153,13 @@ export const OpenBountiesTable: React.FC<OpenBountiesTableProps> = ({ bounties, 
               </th>
               <th 
                 scope="col"
-                className="hidden sm:table-cell px-2 sm:px-6 py-3 sm:py-5 border-b border-slate-300 dark:border-mv-border group select-none"
+                className="hidden sm:table-cell px-2 sm:px-6 py-3 sm:py-5 border-b border-slate-300 dark:border-mv-border group select-none text-center w-1/4"
                 aria-sort={getAriaSort('repository')}
               >
                 <button 
-                  className="flex items-center gap-1 sm:gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:text-black dark:focus:text-white transition-colors w-full text-left"
+                  className="flex items-center justify-center gap-1 sm:gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:text-black dark:focus:text-white transition-colors w-full"
                   onClick={() => requestSort('repository')}
+                  aria-label="Sort by Repository"
                 >
                     Repository
                     {getSortIcon('repository')}
@@ -156,12 +167,13 @@ export const OpenBountiesTable: React.FC<OpenBountiesTableProps> = ({ bounties, 
               </th>
               <th 
                 scope="col"
-                className="px-2 sm:px-6 py-3 sm:py-5 border-b border-slate-300 dark:border-mv-border text-center sm:text-right group select-none w-1/3 sm:w-auto"
+                className="px-2 sm:px-6 py-3 sm:py-5 border-b border-slate-300 dark:border-mv-border text-center group select-none w-28 sm:w-auto"
                 aria-sort={getAriaSort('rewardInSats')}
               >
                  <button 
-                  className="flex items-center justify-center sm:justify-end gap-1 sm:gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:text-black dark:focus:text-white transition-colors w-full"
+                  className="flex items-center justify-center gap-1 sm:gap-2 hover:text-black dark:hover:text-white focus:outline-none focus:text-black dark:focus:text-white transition-colors w-full"
                   onClick={() => requestSort('rewardInSats')}
+                  aria-label="Sort by Reward Amount"
                 >
                     Reward
                     {getSortIcon('rewardInSats')}
@@ -185,43 +197,48 @@ export const OpenBountiesTable: React.FC<OpenBountiesTableProps> = ({ bounties, 
                       handleRowClick(bounty);
                     }
                   }}
+                  aria-label={`View details for ${bounty.title}`}
                 >
-                  <td className="hidden sm:table-cell px-2 sm:px-6 py-3 sm:py-5 whitespace-nowrap">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/40 transition-shadow shrink-0 group-hover:scale-110 duration-300" aria-hidden="true">
-                      <span className="text-white font-bold text-sm">₿</span>
-                    </div>
-                  </td>
                   <td className="px-2 sm:px-6 py-3 sm:py-5 text-left">
-                    <div className="font-black text-slate-900 dark:text-white text-xs sm:text-base group-hover:text-cyan-800 dark:group-hover:text-mv-cyan transition-colors font-display tracking-wide uppercase line-clamp-2 group-hover:translate-x-1 duration-200">
-                      {bounty.title}
-                    </div>
-                    <div className="flex sm:hidden items-center justify-start gap-2 text-slate-700 dark:text-slate-400 font-mono text-[10px] mt-1">
-                      <a 
-                        href={githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-1 hover:text-cyan-800 dark:hover:text-mv-cyan underline decoration-slate-400/50 font-bold"
-                      >
-                         <Github size={10} aria-hidden="true" />
-                         {bounty.repository}
-                      </a>
+                    <div className="flex items-center gap-3">
+                        <div className="hidden sm:flex w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 items-center justify-center shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/40 transition-shadow shrink-0 group-hover:scale-110 duration-300" aria-hidden="true">
+                            <span className="text-white font-bold text-sm">₿</span>
+                        </div>
+                        <div>
+                            <div className="font-black text-slate-900 dark:text-white text-xs sm:text-base group-hover:text-cyan-800 dark:group-hover:text-mv-cyan transition-colors font-display tracking-wide uppercase line-clamp-2 group-hover:translate-x-1 duration-200">
+                            {bounty.title}
+                            </div>
+                            <div className="flex sm:hidden items-center justify-start gap-2 text-slate-700 dark:text-slate-400 font-mono text-[10px] mt-1">
+                            <a 
+                                href={githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="flex items-center gap-1 hover:text-cyan-800 dark:hover:text-mv-cyan underline decoration-slate-400/50 font-bold"
+                                aria-label={`Repository ${bounty.repository}`}
+                            >
+                                <Github size={10} aria-hidden="true" />
+                                {bounty.repository}
+                            </a>
+                            </div>
+                        </div>
                     </div>
                   </td>
-                  <td className="px-2 sm:px-6 py-3 sm:py-5 hidden sm:table-cell whitespace-nowrap">
+                  <td className="px-2 sm:px-6 py-3 sm:py-5 hidden sm:table-cell whitespace-nowrap text-left">
                     <a 
                         href={githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-400 font-mono text-xs font-bold hover:text-cyan-800 dark:hover:text-mv-cyan transition-colors hover:underline decoration-cyan-500/30 underline-offset-4"
+                        aria-label={`View repository ${bounty.repository} on GitHub`}
                     >
                       <Github size={14} aria-hidden="true" />
                       {bounty.repository}
-                      <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
                     </a>
                   </td>
-                  <td className="px-2 sm:px-6 py-3 sm:py-5 text-center sm:text-right whitespace-nowrap">
+                  <td className="px-2 sm:px-6 py-3 sm:py-5 text-center whitespace-nowrap">
                     <div className={`inline-flex items-center gap-1 font-mono font-black text-[10px] sm:text-base px-2 sm:px-3 py-1 sm:py-2 rounded-sm border shadow-sm transition-all duration-300 group-hover:scale-105 origin-center sm:origin-right ${
                         currency === 'SATS' 
                             ? 'text-cyan-800 dark:text-mv-cyan bg-cyan-100/50 dark:bg-mv-cyan/5 border-cyan-300 dark:border-mv-cyan/20 shadow-[0_4px_10px_rgba(0,0,0,0.05)]' 
@@ -243,11 +260,12 @@ export const OpenBountiesTable: React.FC<OpenBountiesTableProps> = ({ bounties, 
           <button 
             onClick={() => setShowAll(!showAll)}
             className="text-slate-800 dark:text-slate-400 hover:text-black dark:hover:text-white font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 mx-auto px-6 py-3 rounded-lg border border-slate-300 dark:border-white/10 hover:bg-white dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-sm hover:shadow-md w-full sm:w-auto"
+            aria-expanded={showAll}
           >
             {showAll ? (
-              <>Show Less <ChevronUp size={16} /></>
+              <>Show Less <ChevronUp size={16} aria-hidden="true" /></>
             ) : (
-              <>View All Bounties <ChevronDown size={16} /></>
+              <>View All Bounties <ChevronDown size={16} aria-hidden="true" /></>
             )}
           </button>
         </div>

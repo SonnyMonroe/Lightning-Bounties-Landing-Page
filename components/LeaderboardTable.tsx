@@ -71,8 +71,14 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
 
   return (
     <div className="w-full bg-white dark:bg-mv-card border-2 border-slate-200 dark:border-mv-border rounded-2xl overflow-hidden shadow-xl dark:shadow-2xl transition-colors duration-300">
-      <div className="p-6 md:p-8 border-b-2 border-slate-200 dark:border-mv-border bg-slate-50 dark:bg-gradient-to-r dark:from-mv-card dark:to-mv-dark flex flex-col items-center justify-center text-center">
-        <div className="flex flex-col items-center w-full">
+      <div className="relative overflow-hidden p-6 md:p-8 border-b-2 border-slate-200 dark:border-mv-border bg-slate-50 dark:bg-gradient-to-r dark:from-mv-card dark:to-mv-dark flex flex-col items-center justify-center text-center">
+        
+        {/* Background Decorative Icon */}
+        <div className="absolute -right-8 -bottom-10 opacity-[0.08] dark:opacity-[0.05] pointer-events-none transform rotate-12 select-none">
+             <Trophy size={200} className="text-yellow-600 dark:text-yellow-500 w-32 h-32 md:w-52 md:h-52" strokeWidth={1} />
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center w-full">
             <h3 id="leaderboard-heading" className="text-xl sm:text-2xl md:text-4xl font-bold text-slate-900 dark:text-white flex items-center justify-center gap-3 mb-2 font-display uppercase tracking-widest leading-none text-center">
             BOUNTY HUNTER LEADERBOARD <Trophy size={24} className="md:w-8 md:h-8 text-yellow-600 drop-shadow-md dark:drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]" aria-hidden="true" />
             </h3>
@@ -81,7 +87,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
             </p>
         </div>
 
-        <div className="flex justify-center" role="group" aria-label="Currency Toggle">
+        <div className="relative z-10 flex justify-center" role="group" aria-label="Currency Toggle">
             <div className="bg-slate-200/50 dark:bg-white/5 p-1 rounded-xl flex items-center border-2 border-slate-200 dark:border-white/10 shadow-inner scale-90 md:scale-100">
                 <button
                     onClick={() => setCurrency('SATS')}
@@ -112,12 +118,12 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
       </div>
       
       <div className="overflow-x-auto scrollbar-hide">
-        <table className="w-full text-left border-collapse" aria-labelledby="leaderboard-heading">
+        <table className="w-full text-left border-collapse table-fixed min-w-full" aria-labelledby="leaderboard-heading">
           <thead className="bg-slate-100 dark:bg-white/5 border-b-2 border-slate-200 dark:border-mv-border text-slate-900 dark:text-slate-400 uppercase text-[10px] sm:text-xs font-black tracking-widest font-display">
             <tr>
               <th 
                 scope="col"
-                className="px-2 sm:px-6 py-3 sm:py-5 group select-none text-center w-[40%] sm:w-auto"
+                className="px-2 sm:px-6 py-3 sm:py-5 group select-none text-center w-[45%] sm:w-auto"
                 aria-sort={getAriaSort('developer')}
               >
                 <button 
@@ -131,7 +137,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
               </th>
               <th 
                 scope="col"
-                className="px-2 sm:px-6 py-3 sm:py-5 text-center group select-none w-[20%] sm:w-auto"
+                className="px-2 sm:px-6 py-3 sm:py-5 text-center group select-none w-[15%] sm:w-auto"
                 aria-sort={getAriaSort('claimedCount')}
               >
                 <button 
@@ -139,7 +145,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
                   onClick={() => requestSort('claimedCount')}
                   aria-label="Sort by Bounties Solved"
                 >
-                    Solved
+                    Bounties Solved
                     {getSortIcon('claimedCount')}
                 </button>
               </th>
@@ -153,7 +159,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
                   onClick={() => requestSort('rewardsInSats')}
                   aria-label="Sort by Total Rewards"
                 >
-                    Rewards
+                    Total Rewards
                     {getSortIcon('rewardsInSats')}
                 </button>
               </th>
@@ -187,7 +193,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
                       href={`https://github.com/${dev.developer}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="font-black text-slate-950 dark:text-white hover:text-cyan-800 dark:hover:text-mv-cyan transition-colors text-xs sm:text-base focus:ring-2 focus:ring-mv-cyan focus:outline-none rounded px-1 group-hover:translate-x-1 duration-200 truncate max-w-[80px] sm:max-w-none text-left"
+                      className="font-black text-slate-950 dark:text-white hover:text-cyan-800 dark:hover:text-mv-cyan transition-colors text-xs sm:text-base focus:ring-2 focus:ring-mv-cyan focus:outline-none rounded px-1 group-hover:translate-x-1 duration-200 truncate w-full"
                       aria-label={`View ${dev.developer} on GitHub`}
                     >
                       {dev.developer}
@@ -200,8 +206,8 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ developers, 
                     {dev.claimedCount}
                   </span>
                 </td>
-                <td className="px-2 sm:px-6 py-3 sm:py-5 text-center sm:text-right whitespace-nowrap">
-                  <div className={`font-mono font-black text-xs sm:text-base transition-colors group-hover:scale-105 origin-center sm:origin-right duration-200 ${currency === 'SATS' ? 'text-cyan-900 dark:text-mv-cyan' : 'text-green-900 dark:text-green-400'}`}>
+                <td className="px-2 sm:px-6 py-3 sm:py-5 text-center whitespace-nowrap">
+                  <div className={`font-mono font-black text-xs sm:text-base transition-colors group-hover:scale-105 origin-center duration-200 ${currency === 'SATS' ? 'text-cyan-900 dark:text-mv-cyan' : 'text-green-900 dark:text-green-400'}`}>
                     {formatReward(dev.rewardsInSats)}
                   </div>
                 </td>

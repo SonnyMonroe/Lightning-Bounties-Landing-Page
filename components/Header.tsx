@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 // Added missing imports for motion and AnimatePresence
 import { motion, AnimatePresence } from 'framer-motion';
@@ -143,7 +142,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onNavigat
               href="https://app.lightningbounties.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex relative overflow-hidden group px-6 py-2.5 font-bold text-xs uppercase tracking-[0.15em] font-display text-white dark:text-white transition-all duration-300 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-0.5 focus:ring-4 focus:ring-mv-cyan/50 focus:outline-none"
+              className="hidden sm:flex relative overflow-hidden group px-6 py-2.5 font-bold text-sm uppercase tracking-[0.15em] font-display text-white dark:text-white transition-all duration-300 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-0.5 focus:ring-4 focus:ring-mv-cyan/50 focus:outline-none"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-mv-cyan to-mv-purple transition-all duration-500 group-hover:scale-110"></div>
               <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white transition-opacity"></div>
@@ -174,13 +173,43 @@ export const Header: React.FC<HeaderProps> = ({ darkMode, toggleTheme, onNavigat
             exit={{ opacity: 0, y: -10 }}
             className="lg:hidden bg-white dark:bg-black border-b border-slate-200 dark:border-white/10 absolute w-full shadow-2xl z-40"
           >
-            <div className="px-4 pt-2 pb-6 space-y-2">
-              <button onClick={() => handleNavClick('how-it-works')} className="block w-full text-left px-3 py-3 text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors focus:ring-2 focus:ring-mv-cyan focus:outline-none">How it Works</button>
-              <button onClick={() => handleNavClick('about')} className="block w-full text-left px-3 py-3 text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors focus:ring-2 focus:ring-mv-cyan focus:outline-none">About</button>
-              <button onClick={() => handleNavClick('features')} className="block w-full text-left px-3 py-3 text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors focus:ring-2 focus:ring-mv-cyan focus:outline-none">Features</button>
-              <a href="https://issues.lightningbounties.com/" target="_blank" rel="noopener noreferrer" className="block w-full text-left px-3 py-3 text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 rounded-md font-display transition-colors focus:ring-2 focus:ring-mv-cyan focus:outline-none">Lightning Issues</a>
-              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10">
-                <a href="https://app.lightningbounties.com/" target="_blank" rel="noopener noreferrer" className="w-full bg-gradient-to-r from-mv-cyan to-mv-purple text-white py-3 font-bold uppercase tracking-widest font-display text-center block rounded-lg shadow-lg focus:ring-4 focus:ring-mv-cyan/50 focus:outline-none">Explore Bounties</a>
+            <div className="px-4 pt-4 pb-8 space-y-1">
+              <button 
+                onClick={() => handleNavClick('how-it-works')} 
+                className="block w-full text-left px-4 py-4 text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-white/70 hover:text-mv-cyan dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg font-display transition-all duration-200 focus:ring-2 focus:ring-mv-cyan focus:outline-none border-l-4 border-transparent hover:border-mv-cyan"
+              >
+                How it Works
+              </button>
+              <button 
+                onClick={() => handleNavClick('about')} 
+                className="block w-full text-left px-4 py-4 text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-white/70 hover:text-mv-cyan dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg font-display transition-all duration-200 focus:ring-2 focus:ring-mv-cyan focus:outline-none border-l-4 border-transparent hover:border-mv-cyan"
+              >
+                About
+              </button>
+              <button 
+                onClick={() => handleNavClick('features')} 
+                className="block w-full text-left px-4 py-4 text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-white/70 hover:text-mv-cyan dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg font-display transition-all duration-200 focus:ring-2 focus:ring-mv-cyan focus:outline-none border-l-4 border-transparent hover:border-mv-cyan"
+              >
+                Features
+              </button>
+              <a 
+                href="https://issues.lightningbounties.com/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="block w-full text-left px-4 py-4 text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-white/70 hover:text-mv-cyan dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg font-display transition-all duration-200 focus:ring-2 focus:ring-mv-cyan focus:outline-none border-l-4 border-transparent hover:border-mv-cyan flex items-center justify-between"
+              >
+                Lightning Issues
+                <ExternalLink size={14} className="opacity-50" />
+              </a>
+              <div className="mt-6 pt-6 border-t border-slate-200 dark:border-white/10">
+                <a 
+                  href="https://app.lightningbounties.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-full bg-gradient-to-r from-mv-cyan to-mv-purple text-white py-4 font-bold uppercase tracking-widest font-display text-center block rounded-xl shadow-lg hover:shadow-cyan-500/25 transition-all focus:ring-4 focus:ring-mv-cyan/50 focus:outline-none active:scale-[0.98]"
+                >
+                  Explore Bounties
+                </a>
               </div>
             </div>
           </motion.div>

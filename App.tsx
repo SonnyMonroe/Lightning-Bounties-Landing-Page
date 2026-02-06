@@ -470,6 +470,7 @@ export const App: React.FC = () => {
   const [developers, setDevelopers] = useState<Developer[]>([]);
   const [openBounties, setOpenBounties] = useState<UnclaimedIssue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [heroLogoLoaded, setHeroLogoLoaded] = useState(false);
   
   const [currentView, setCurrentView] = useState<'home' | 'faq' | 'how-it-works' | 'team' | 'privacy' | 'terms' | 'about' | 'features'>('home');
 
@@ -532,7 +533,7 @@ export const App: React.FC = () => {
         window.location.hash = view;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
+    };
 
   const getMetricValue = (name: string): number => {
     const m = metrics.find(m => m.metric === name);
@@ -710,7 +711,20 @@ export const App: React.FC = () => {
                                 <motion.div animate={{ scale: [1, 1.05, 1], boxShadow: ["0 0 20px 0px rgba(6,182,212,0.1)", "0 0 50px 10px rgba(6,182,212,0.3)", "0 0 20px 0px rgba(6,182,212,0.1)"] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} whileHover={{ scale: 1.1, rotate: 2 }} className="w-48 h-48 md:w-72 md:h-72 flex items-center justify-center relative group rounded-full">
                                     <div className="relative z-10 w-40 h-40 md:w-60 md:h-60 bg-white/20 dark:bg-black border border-slate-300 dark:border-white/10 rounded-full flex items-center justify-center backdrop-blur-3xl shadow-2xl overflow-hidden transition-all duration-500 group-hover:border-mv-cyan/50">
                                         <motion.div animate={{ opacity: [0.1, 0.3, 0.1], scale: [1, 1.3, 1] }} transition={{ duration: 5, repeat: Infinity }} className="absolute inset-0 bg-gradient-to-tr from-mv-cyan/40 to-mv-magenta/40" />
-                                        <img src="images/logo3.png" alt="Hero Logo" className="w-full h-full object-cover scale-[1.3] transition-transform duration-700 group-hover:scale-[1.5] drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]" />
+                                        
+                                        {!heroLogoLoaded && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-slate-100/10 backdrop-blur-md z-0">
+                                                 <div className="w-full h-full animate-pulse bg-slate-200 dark:bg-white/5 rounded-full blur-xl" />
+                                            </div>
+                                        )}
+                                        
+                                        <img 
+                                          src="images/logo3.png" 
+                                          alt="Hero Logo" 
+                                          loading="lazy"
+                                          onLoad={() => setHeroLogoLoaded(true)}
+                                          className={`w-full h-full object-cover scale-[1.3] transition-all duration-700 group-hover:scale-[1.5] drop-shadow-[0_0_20px_rgba(6,182,212,0.5)] z-10 ${heroLogoLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-lg'}`} 
+                                        />
                                     </div>
                                     <motion.div animate={{ scale: [1, 1.6], opacity: [0.6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }} className="absolute inset-0 rounded-full border-2 border-mv-cyan/40" />
                                 </motion.div>
@@ -749,7 +763,7 @@ export const App: React.FC = () => {
                   </div>
                 </section>
 
-                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-32">
+                <div className="relative z-10 max-w-7xl mx-auto px-2 md:px-4 sm:px-6 lg:px-8 py-24 space-y-32">
                   <section id="leaderboard" className="scroll-mt-24 relative overflow-hidden p-1 rounded-2xl">
                      <div className="absolute inset-0 opacity-15 pointer-events-none">
                         <NexusBackground isDark={darkMode} />
